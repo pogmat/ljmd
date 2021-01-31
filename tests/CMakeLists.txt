@@ -28,7 +28,16 @@ add_executable(test_force ${ljmd_SOURCE_FILES}/physics/test_force.cpp)
 #add_executable(test_common common/test_common.cpp)
 set_target_properties(test_force PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 target_include_directories(test_force PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/physics)
-target_link_libraries(test_force PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib)
+target_link_libraries(test_force PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
 add_test(NAME force COMMAND test_force )
+
+# utils tests
+
+add_executable(test_utils ${ljmd_SOURCE_FILES}/physics/test_utils.cpp)
+#add_executable(test_common common/test_common.cpp)
+set_target_properties(test_utils PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_utils PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/physics)
+target_link_libraries(test_utils PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib)
+add_test(NAME utils COMMAND test_utils )
 
 # verlet integration tests
