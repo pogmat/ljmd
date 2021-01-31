@@ -37,7 +37,7 @@ TEST(ForceTestSingle, single) {
         delete sys;
 }
 
-class ForceTest : public ::testing::Test {
+class ForceTest : public ::testing::TestWithParam<double> {
 
 protected:
         mdsys_t *sys;
@@ -77,7 +77,7 @@ protected:
         }
 };
 
-TEST_F(ForceTest, shortrange) {
+TEST_P(ForceTest, shortrange) {
 
         ASSERT_NE(sys, nullptr);
         ASSERT_DOUBLE_EQ(sys->natoms, 2);
@@ -101,7 +101,7 @@ TEST_F(ForceTest, shortrange) {
         ASSERT_DOUBLE_EQ(sys->epot, 0.0);
 }
 
-TEST_F(ForceTest, longrange) {
+TEST_P(ForceTest, longrange) {
 
         ASSERT_NE(sys, nullptr);
         ASSERT_DOUBLE_EQ(sys->natoms, 2);
