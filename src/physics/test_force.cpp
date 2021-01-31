@@ -3,7 +3,7 @@
 /* inclusion of source file is needed
  * since we want to test a static function  */
 extern "C" {
-#include "force.c"
+		#include "force.c"
 }
 
 TEST(pbc_test, inside) {
