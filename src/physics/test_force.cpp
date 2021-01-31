@@ -39,19 +39,20 @@ TEST(ForceTestSingle, single) {
 
 class ForceTest : public ::testing::Test {
 
-      protected:
+protected:
         mdsys_t *sys;
+		int eps_param = GetParam();
 
         void SetUp() {
                 sys = new mdsys_t;
                 sys->natoms = 2;
-                sys->epsilon = 256.0;
+                sys->epsilon = eps_param;
                 sys->sigma = 1.0;
                 sys->box = 10.0;
 
-                sys->rx = new double[2];
-                sys->ry = new double[2];
-                sys->rz = new double[2];
+                sys->rx = new double[2]();
+                sys->ry = new double[2]();
+                sys->rz = new double[2]();
 
                 sys->fx = new double[2];
                 sys->fy = new double[2];
@@ -59,12 +60,8 @@ class ForceTest : public ::testing::Test {
 
                 sys->rx[0] = -1.0;
                 sys->rx[1] = 1.0;
-                sys->ry[0] = 0.0;
-                sys->ry[1] = 0.0;
-                sys->rz[0] = 0.0;
-                sys->rz[1] = 0.0;
 
-                // forces and will be zeroes by azzero
+                // forces and will be zeroed by azzero
         }
 
         void TearDown() {
@@ -119,8 +116,8 @@ TEST_F(ForceTest, longrange) {
 
         force(sys);
 
-        double exp_epot = -63.0 / 4.0;
-        double exp_ff = -93.0 / 2.0;
+        double exp_epot = -eps_param*63.0 / 1024.0;
+        double exp_ff = -eps_param*93.0 / 512.0;
 
         ASSERT_DOUBLE_EQ(sys->fx[0], -exp_ff);
         ASSERT_DOUBLE_EQ(sys->fx[1], exp_ff);
@@ -130,3 +127,7 @@ TEST_F(ForceTest, longrange) {
         ASSERT_DOUBLE_EQ(sys->fz[1], 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, exp_epot);
 }
+
+INSTANTIATE_TEST_SUITE_P(ForceTest_parametric,
+			 ForceTest,
+			 ::testing::Values(0.0, 0.5, 1.0));
