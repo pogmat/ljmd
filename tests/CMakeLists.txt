@@ -61,3 +61,11 @@ set_target_properties(test_verlet PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOU
 target_include_directories(test_verlet PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
 target_link_libraries(test_verlet PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
 add_test(NAME verlet COMMAND test_verlet )
+
+# reference test
+find_program(BASH_PROGRAM bash)
+find_program(AWK_PROGRAM awk)
+find_program(CMP_PROGRAM cmp)
+if(BASH_PROGRAM AND AWK_PROGRAM AND CMP_PROGRAM)
+    add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH})
+endif()
