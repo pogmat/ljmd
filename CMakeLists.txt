@@ -42,7 +42,7 @@ target_link_libraries(serial PRIVATE
 
 
 #compilation options list
-list(APPEND main_flags -Wall -g -O3 -ffast-math -fomit-frame-pointer)
+list(APPEND main_flags -Wall -g -O3 -ffast-math -msse3 -fomit-frame-pointer)
 
 #compile options
 target_compile_options (serial PRIVATE ${main_flags}  )
