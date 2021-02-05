@@ -1,10 +1,5 @@
+#include "physics.h"
 #include "gtest/gtest.h"
-
-
-extern "C" {
-#include "integration.c"
-}
-
 
 class IntegrationTest : public ::testing::TestWithParam<std::tuple<double,double>> {
 
