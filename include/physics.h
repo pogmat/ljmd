@@ -27,8 +27,8 @@ typedef struct _mdsys mdsys_t;
 extern void cleanup_mdsys(mdsys_t *sys);
 extern void ekin(mdsys_t *sys);
 extern void force(mdsys_t *sys);
-extern void velverlet(mdsys_t *sys);
-
+extern void verlet_1(mdsys_t *sys);
+extern void verlet_2(mdsys_t *sys);
 
 #ifdef __cplusplus	
 }
