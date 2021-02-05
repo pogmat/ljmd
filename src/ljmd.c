@@ -57,7 +57,11 @@ int main(int argc, char **argv) {
                         output(&sys, erg, traj);
 
                 /* propagate system and recompute energies */
-                velverlet(&sys);
+				/* use the split versin of Verlet algorithm*/
+                verlet_1(&sys);
+        		force(&sys);
+        		verlet_2(&sys);
+				
                 ekin(&sys);
         }
         /**************************************************/
