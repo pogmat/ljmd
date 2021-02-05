@@ -8,10 +8,21 @@ add_executable(serial  src/ljmd.c)
 set_target_properties(serial PROPERTIES OUTPUT_NAME "ljmd-serial.x")
 
 #subdirectories to run their own cmake files 
-add_subdirectory(${ljmd_SOURCE_DIR}/src/common)
-add_subdirectory(${ljmd_SOURCE_DIR}/src/io)
-add_subdirectory(${ljmd_SOURCE_DIR}/src/physics)
-add_subdirectory(${ljmd_SOURCE_DIR}/tests)
+list(APPEND sub_dirs 
+					${ljmd_SOURCE_DIR}/src/common  
+					${ljmd_SOURCE_DIR}/src/io  
+					${ljmd_SOURCE_DIR}/src/physics 
+					)
+
+if(ENABLE_TESTING)
+					enable_testing()
+					enable_language(CXX)
+					list(APPEND sub_dirs ${ljmd_SOURCE_DIR}/tests )
+endif()
+
+foreach(subdir ${sub_dirs})
+  					add_subdirectory(${subdir})
+endforeach()
 
 
 #include dir for the header files
@@ -26,11 +37,7 @@ target_link_libraries(serial PRIVATE
 					ljmd_common_lib
 					)
 
-link_directories(
-				${ljmd_SOURCE_DIR}/src/common
-				${ljmd_SOURCE_DIR}/src/io
-				${ljmd_SOURCE_DIR}/src/physics
-				)
+
 
 
 
