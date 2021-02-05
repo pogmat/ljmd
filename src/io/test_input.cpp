@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 extern "C" {
-#include "../common/common.c"
+#include "common.c"
 #include "input.c"
 }
 
