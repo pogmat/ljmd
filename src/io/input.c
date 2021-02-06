@@ -84,31 +84,23 @@ int initialise(mdsys_t *sys, FILE *infile ,file_names *fnames, int *nprint) {
         *nprint = atoi(line);
 
         /* allocate memory */
-        sys->rx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->ry = (double *)malloc(sys->natoms * sizeof(double));
-        sys->rz = (double *)malloc(sys->natoms * sizeof(double));
-        sys->vx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->vy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->vz = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fz = (double *)malloc(sys->natoms * sizeof(double));
+	sys->r =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+	sys->v =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+	sys->f =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));	
 
         /* read restart */
         fp = fopen(restfile, "r");
         if (fp) {
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->rx + i, sys->ry + i,
-                               sys->rz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->r[i].x), &(sys->r[i].y),
+                               &(sys->r[i].z));
                 }
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->vx + i, sys->vy + i,
-                               sys->vz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->v[i].x), &(sys->v[i].y),
+                               &(sys->v[i].z));
                 }
                 fclose(fp);
-                azzero(sys->fx, sys->natoms);
-                azzero(sys->fy, sys->natoms);
-                azzero(sys->fz, sys->natoms);
+                azzero(sys->f, sys->natoms);
         } else {
                 perror("cannot read restart file");
                 return 3;

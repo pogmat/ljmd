@@ -20,20 +20,16 @@ TEST(ForceTestSingle, single) {
         mdsys_t *sys = new mdsys_t;
         sys->natoms = 1;
 
-        sys->fx = new double[1];
-        sys->fy = new double[1];
-        sys->fz = new double[1];
+        sys->f = new vec3_t[1];
 
         force(sys);
 
-        ASSERT_EQ(sys->fx[0], 0.0);
-        ASSERT_EQ(sys->fy[0], 0.0);
-        ASSERT_EQ(sys->fz[0], 0.0);
+        ASSERT_EQ(sys->f[0].x, 0.0);
+        ASSERT_EQ(sys->f[0].y, 0.0);
+        ASSERT_EQ(sys->f[0].z, 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, 0.0);
 
-        delete[] sys->fx;
-        delete[] sys->fy;
-        delete[] sys->fz;
+        delete[] sys->f;
         delete sys;
 }
 
@@ -50,28 +46,20 @@ protected:
                 sys->sigma = 1.0;
                 sys->box = 10.0;
 
-                sys->rx = new double[2]();
-                sys->ry = new double[2]();
-                sys->rz = new double[2]();
+                sys->r = new vec3_t[2]();
 
-                sys->fx = new double[2];
-                sys->fy = new double[2];
-                sys->fz = new double[2];
+                sys->f = new vec3_t[2];
 
-                sys->rx[0] = -1.0;
-                sys->rx[1] = 1.0;
+                sys->r[0].x = -1.0;
+                sys->r[1].x = 1.0;
 
                 // forces and will be zeroed by azzero
         }
 
         void TearDown() {
-                delete[] sys->rx;
-                delete[] sys->ry;
-                delete[] sys->rz;
+                delete[] sys->r;
 
-                delete[] sys->fx;
-                delete[] sys->fy;
-                delete[] sys->fz;
+                delete[] sys->f;
 
                 delete sys;
         }
@@ -81,23 +69,23 @@ TEST_P(ForceTest, shortrange) {
 
         ASSERT_NE(sys, nullptr);
         ASSERT_DOUBLE_EQ(sys->natoms, 2);
-        ASSERT_DOUBLE_EQ(sys->rx[0], -1.0);
-        ASSERT_DOUBLE_EQ(sys->rx[1], 1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].x, -1.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].x, 1.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].z, 0.0);
 
         sys->rcut = 0.5;
 
         force(sys);
 
-        ASSERT_DOUBLE_EQ(sys->fx[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fx[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[1], 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[0].x, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[1].x, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[1].z, 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, 0.0);
 }
 
@@ -105,12 +93,12 @@ TEST_P(ForceTest, longrange) {
 
         ASSERT_NE(sys, nullptr);
         ASSERT_DOUBLE_EQ(sys->natoms, 2);
-        ASSERT_DOUBLE_EQ(sys->rx[0], -1.0);
-        ASSERT_DOUBLE_EQ(sys->rx[1], 1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].x, -1.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].x, 1.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].z, 0.0);
 
         sys->rcut = 4.0;
 
@@ -119,12 +107,12 @@ TEST_P(ForceTest, longrange) {
         double exp_epot = -eps_param*63.0 / 1024.0;
         double exp_ff = -eps_param*93.0 / 512.0;
 
-        ASSERT_DOUBLE_EQ(sys->fx[0], -exp_ff);
-        ASSERT_DOUBLE_EQ(sys->fx[1], exp_ff);
-        ASSERT_DOUBLE_EQ(sys->fy[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[1], 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[0].x, -exp_ff);
+        ASSERT_DOUBLE_EQ(sys->f[1].x, exp_ff);
+        ASSERT_DOUBLE_EQ(sys->f[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->f[1].z, 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, exp_epot);
 }
 

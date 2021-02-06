@@ -8,40 +8,28 @@ extern "C" {
 	#include "utils.c"
 }
 
-TEST(cleanup_double_test, empty)
+TEST(cleanup_vec3_t_test, empty)
 {
-	double *m = NULL;
-	cleanup_double(&m);
+	vec3_t *m = NULL;
+	cleanup_vec3_t(&m);
 	ASSERT_EQ(m, nullptr);
 }
 
-TEST(cleanup_double_test, release)
+TEST(cleanup_vec3_t_test, release)
 {
-	double *m = (double*)malloc(sizeof(double));
-	cleanup_double(&m);
+	vec3_t *m = (vec3_t*)malloc(sizeof(vec3_t));
+	cleanup_vec3_t(&m);
 	ASSERT_EQ(m, nullptr);
 }
 
 TEST(cleanup_mdsys_test, initialized)
 {
 	mdsys_t sys;
-	sys.rx = (double*)calloc(2, sizeof(double));
-	sys.ry = (double*)calloc(2, sizeof(double));
-	sys.rz = (double*)calloc(2, sizeof(double));
-	sys.vx = (double*)calloc(2, sizeof(double));
-	sys.vy = (double*)calloc(2, sizeof(double));
-	sys.vz = (double*)calloc(2, sizeof(double));
-	sys.fx = (double*)calloc(2, sizeof(double));
-	sys.fy = (double*)calloc(2, sizeof(double));
-	sys.fz = (double*)calloc(2, sizeof(double));
+	sys.r = (vec3_t *)calloc(2, sizeof(vec3_t));
+	sys.v = (vec3_t *)calloc(2, sizeof(vec3_t));
+	sys.f = (vec3_t *)calloc(2, sizeof(vec3_t));
 	cleanup_mdsys(&sys);
-	ASSERT_EQ(sys.rx, nullptr);
-	ASSERT_EQ(sys.ry, nullptr);
-	ASSERT_EQ(sys.rz, nullptr);
-	ASSERT_EQ(sys.vx, nullptr);
-	ASSERT_EQ(sys.vy, nullptr);
-	ASSERT_EQ(sys.vz, nullptr);
-	ASSERT_EQ(sys.fx, nullptr);
-	ASSERT_EQ(sys.fy, nullptr);
-	ASSERT_EQ(sys.fz, nullptr);
+	ASSERT_EQ(sys.r, nullptr);
+	ASSERT_EQ(sys.v, nullptr);
+	ASSERT_EQ(sys.f, nullptr);
 }

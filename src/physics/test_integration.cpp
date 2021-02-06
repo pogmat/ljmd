@@ -12,32 +12,22 @@ protected:
                 sys->natoms = 2;
                 sys->mass = 1.0;
 			
-                sys->rx = new double[2]();
-                sys->ry = new double[2]();
-                sys->rz = new double[2]();
+                sys->r = new vec3_t[2]();
 			
-				sys->vx = new double[2]();
-                sys->vy = new double[2]();
-                sys->vz = new double[2]();
+		sys->v = new vec3_t[2]();
 
-                sys->fx = new double[2]();
-                sys->fy = new double[2]();
-                sys->fz = new double[2]();
+                sys->f = new vec3_t[2]();
+
 			
         }
 
         void TearDown() {
-                delete[] sys->rx;
-                delete[] sys->ry;
-                delete[] sys->rz;
-			
-				delete[] sys->vx;
-                delete[] sys->vy;
-                delete[] sys->vz;
+                delete[] sys->r;
 
-                delete[] sys->fx;
-                delete[] sys->fy;
-                delete[] sys->fz;
+			
+		delete[] sys->v;
+
+                delete[] sys->f;
 
                 delete sys;
         }
@@ -46,63 +36,63 @@ protected:
 TEST_P(IntegrationTest, testVerlet1) {
         ASSERT_NE(sys, nullptr);
 	
-		sys->dt = std::get<0>(GetParam());
+	sys->dt = std::get<0>(GetParam());
 	
-        sys->ry[0] = 1.0;
-		sys->ry[1] = -1.0;
+        sys->r[0].y = 1.0;
+	sys->r[1].y = -1.0;
 	
-		sys->fx[0] = std::get<1>(GetParam());
-		sys->fx[1] = std::get<1>(GetParam());
+	sys->f[0].x = std::get<1>(GetParam());
+	sys->f[1].x = std::get<1>(GetParam());
 	
-		verlet_1(sys);
+	verlet_1(sys);
 	
-		double exp_v_increm = 0.5*std::get<0>(GetParam())*std::get<1>(GetParam()) / mvsq2e;
-		double exp_r_increm = exp_v_increm*std::get<0>(GetParam());
+	double exp_v_increm = 0.5*std::get<0>(GetParam())*std::get<1>(GetParam()) / mvsq2e;
+	double exp_r_increm = exp_v_increm*std::get<0>(GetParam());
 		
-		ASSERT_DOUBLE_EQ(sys->rx[0],exp_r_increm);
-		ASSERT_DOUBLE_EQ(sys->ry[0],1.0);
-		ASSERT_DOUBLE_EQ(sys->rz[0],0.0);
-		ASSERT_DOUBLE_EQ(sys->vx[0],exp_v_increm);
-		ASSERT_DOUBLE_EQ(sys->vy[0],0.0);
-		ASSERT_DOUBLE_EQ(sys->vz[0],0.0);
+	ASSERT_DOUBLE_EQ(sys->r[0].x,exp_r_increm);
+	ASSERT_DOUBLE_EQ(sys->r[0].y,1.0);
+	ASSERT_DOUBLE_EQ(sys->r[0].z,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[0].x,exp_v_increm);
+	ASSERT_DOUBLE_EQ(sys->v[0].y,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[0].z,0.0);
 
-		ASSERT_DOUBLE_EQ(sys->rx[1],exp_r_increm);
-		ASSERT_DOUBLE_EQ(sys->ry[1],-1.0);
-		ASSERT_DOUBLE_EQ(sys->rz[1],0.0);
-		ASSERT_DOUBLE_EQ(sys->vx[1],exp_v_increm);
-		ASSERT_DOUBLE_EQ(sys->vy[1],0.0);
-		ASSERT_DOUBLE_EQ(sys->vz[1],0.0);
+	ASSERT_DOUBLE_EQ(sys->r[1].x,exp_r_increm);
+	ASSERT_DOUBLE_EQ(sys->r[1].y,-1.0);
+	ASSERT_DOUBLE_EQ(sys->r[1].z,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[1].x,exp_v_increm);
+	ASSERT_DOUBLE_EQ(sys->v[1].y,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[1].z,0.0);
 
 }
 
 TEST_P(IntegrationTest, testVerlet2) {
         ASSERT_NE(sys, nullptr);
 	
-		sys->dt = std::get<0>(GetParam());
+	sys->dt = std::get<0>(GetParam());
 	
-        sys->ry[0] = 1.0;
-		sys->ry[1] = -1.0;
+        sys->r[0].y = 1.0;
+	sys->r[1].y = -1.0;
 	
-		sys->fx[0] = std::get<1>(GetParam());
-		sys->fx[1] = std::get<1>(GetParam());
+	sys->f[0].x = std::get<1>(GetParam());
+	sys->f[1].x = std::get<1>(GetParam());
 	
-		verlet_2(sys);
+	verlet_2(sys);
 	
-		double exp_v_increm = 0.5*std::get<0>(GetParam())*std::get<1>(GetParam()) / mvsq2e;
+	double exp_v_increm = 0.5*std::get<0>(GetParam())*std::get<1>(GetParam()) / mvsq2e;
 		
-		ASSERT_DOUBLE_EQ(sys->rx[0],0.0);
-		ASSERT_DOUBLE_EQ(sys->ry[0],1.0);
-		ASSERT_DOUBLE_EQ(sys->rz[0],0.0);
-		ASSERT_DOUBLE_EQ(sys->vx[0],exp_v_increm);
-		ASSERT_DOUBLE_EQ(sys->vy[0],0.0);
-		ASSERT_DOUBLE_EQ(sys->vz[0],0.0);
+	ASSERT_DOUBLE_EQ(sys->r[0].x,0.0);
+	ASSERT_DOUBLE_EQ(sys->r[0].y,1.0);
+	ASSERT_DOUBLE_EQ(sys->r[0].z,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[0].x,exp_v_increm);
+	ASSERT_DOUBLE_EQ(sys->v[0].y,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[0].z,0.0);
 
-		ASSERT_DOUBLE_EQ(sys->rx[1],0.0);
-		ASSERT_DOUBLE_EQ(sys->ry[1],-1.0);
-		ASSERT_DOUBLE_EQ(sys->rz[1],0.0);
-		ASSERT_DOUBLE_EQ(sys->vx[1],exp_v_increm);
-		ASSERT_DOUBLE_EQ(sys->vy[1],0.0);
-		ASSERT_DOUBLE_EQ(sys->vz[1],0.0);
+	ASSERT_DOUBLE_EQ(sys->r[1].x,0.0);
+	ASSERT_DOUBLE_EQ(sys->r[1].y,-1.0);
+	ASSERT_DOUBLE_EQ(sys->r[1].z,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[1].x,exp_v_increm);
+	ASSERT_DOUBLE_EQ(sys->v[1].y,0.0);
+	ASSERT_DOUBLE_EQ(sys->v[1].z,0.0);
 
 }
 
