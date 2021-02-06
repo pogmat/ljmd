@@ -69,3 +69,42 @@ find_program(CMP_PROGRAM cmp)
 if(BASH_PROGRAM AND AWK_PROGRAM AND CMP_PROGRAM)
     add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH})
 endif()
+
+
+
+
+
+#mpi tests
+
+if(ENABLE_MPI)
+	find_package(MPI REQUIRED) 
+	
+
+	message("fount MPI C compiler : ${MPI_C_COMPILER}")
+	message("fount MPI CXX compiler : ${MPI_CXX_COMPILER}")
+	
+	function(create_test_mpi)
+		
+		add_executable(test_mpi ${ljmd_SOURCE_FILES}/mpi/test_mpi.cpp)
+		set_target_properties(test_mpi PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+		target_include_directories(test_mpi PRIVATE ${MPI_CXX_INCLUDE_PATH} )
+		target_link_libraries(test_mpi PRIVATE GTest::GTestMain GTest::GTest ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS}  )
+		
+		set(TEST_MPI_NPROCS 4)
+		
+		cmake_parse_arguments(TEST_MPI_ "" "NPROCS" "COMMAND" ${ARGN})
+		message("${TEST_MPI_NAME} command : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_MPI_NPROCS} ${MPIEXEC_PREFLAGS} ./test_mpi ${TEST_MPI__COMMAND}")
+		
+		add_test(
+			NAME mpi 
+			COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_MPI_NPROCS} ${TEST_MPI__COMMAND} ${TEST_MPI_NPROCS}
+		)
+		
+		
+	
+	endfunction(create_test_mpi)
+	
+	create_test_mpi(NPROCS 4 COMMAND $<TARGET_FILE:test_mpi> )
+	
+endif()
+
