@@ -3,10 +3,11 @@
 #include <string.h>
 
 #include "io.h"
+#include "mpi_headers/mpi_comm.h"
 #include "mpi_headers/mpi_utils.h"
 #include <mpi.h>
 
-int read_brodc_input_params(int proc_id, mdsys_t *sys, FILE *infile,
+int read_brodc_input_params(const int proc_id, mdsys_t *sys, FILE *infile,
                             char *restfile, file_names *fnames, int *nprint) {
 
         /* prepare two arrays to send the input parameters */
@@ -82,7 +83,7 @@ int read_brodc_input_params(int proc_id, mdsys_t *sys, FILE *infile,
         return 0;
 }
 
-int read_restfile(char *restfile, mdsys_t *sys) {
+int read_restfile(const char *restfile, mdsys_t *sys) {
 
         /* read restart */
         FILE *fp = fopen(restfile, "r");
@@ -108,53 +109,9 @@ int read_restfile(char *restfile, mdsys_t *sys) {
         return 0;
 }
 
-void send_pos_vel(int nprocs, arr_seg_t *proc_seg, mdsys_t *sys, double *vxbuf,
-                  double *vybuf, double *vzbuf) {
-
-        /* 	initialise arrays for MPI Scatterv
-                count contains the number of elements per segment scattered
-                offset indicates the beginning of the segment in the master
-           buffer
-        */
-
-        int count[nprocs];
-        int offsets[nprocs];
-
-        mpi_collective_comm_arrays(nprocs, proc_seg->splitting, count, offsets);
-
-        MPI_Barrier(MPI_COMM_WORLD);
-        MPI_Request rxreq, ryreq, rzreq, vxreq, vyreq, vzreq;
-
-        /*scatter all the positions */
-
-        MPI_Iscatterv(sys->rx, count, offsets, MPI_DOUBLE,
-                      &sys->rx[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &rxreq);
-        MPI_Iscatterv(sys->ry, count, offsets, MPI_DOUBLE,
-                      &sys->ry[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &ryreq);
-        MPI_Iscatterv(sys->rz, count, offsets, MPI_DOUBLE,
-                      &sys->rz[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &rzreq);
-
-        /* scatter all the velocites*/
-        MPI_Iscatterv(vxbuf, count, offsets, MPI_DOUBLE, sys->vx,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vxreq);
-        MPI_Iscatterv(vybuf, count, offsets, MPI_DOUBLE, sys->vy,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vyreq);
-        MPI_Iscatterv(vzbuf, count, offsets, MPI_DOUBLE, sys->vz,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vzreq);
-
-        MPI_Wait(&rxreq, MPI_STATUS_IGNORE);
-        MPI_Wait(&ryreq, MPI_STATUS_IGNORE);
-        MPI_Wait(&rzreq, MPI_STATUS_IGNORE);
-        MPI_Wait(&vxreq, MPI_STATUS_IGNORE);
-        MPI_Wait(&vyreq, MPI_STATUS_IGNORE);
-        MPI_Wait(&vzreq, MPI_STATUS_IGNORE);
-}
-
-int mpi_initialise(int nprocs, int proc_id, arr_seg_t *proc_seg, mdsys_t *sys,
-                   FILE *infile, file_names *fnames, int *nprint) {
+int mpi_initialise(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
+                   mdsys_t *sys, FILE *infile, file_names *fnames,
+                   int *nprint) {
 
         char restfile[BLEN];
 
@@ -225,7 +182,7 @@ int mpi_initialise(int nprocs, int proc_id, arr_seg_t *proc_seg, mdsys_t *sys,
         sys->vy = (double *)malloc(proc_seg->size * sizeof(double));
         sys->vz = (double *)malloc(proc_seg->size * sizeof(double));
 
-        send_pos_vel(nprocs, proc_seg, sys, vxbuf, vybuf, vzbuf);
+        mpi_send_pos_vel(nprocs, proc_seg, sys, vxbuf, vybuf, vzbuf);
 
         if (proc_id == 0) {
                 free(vxbuf);

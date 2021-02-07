@@ -120,7 +120,7 @@ if(ENABLE_MPI)
 	add_test(NAME mpi_utils COMMAND test_mpi_utils )
 	
 	
-	# MPI IO testcd bui	
+	# MPI IO test
 	set( MPI_IO_TEST_LIBS 
 			ljmd_mpi_io_lib
 			ljmd_mpi_util_lib
@@ -129,6 +129,14 @@ if(ENABLE_MPI)
 	create_test_mpi(NAME mpi_io NPROCS 4 SRC mpi_io/test_mpi_io.cpp 
 				COMMAND $<TARGET_FILE:test_mpi_io>  LIBS ${MPI_IO_TEST_LIBS}  )
 	configure_file(${ljmd_SOURCE_DIR}/src/mpi/mpi_io/test_params.inp ${ljmd_SOURCE_DIR}/build/test_params.inp COPYONLY)
+	
+	# MPI communication functions test
+	set( MPI_COMM_TEST_LIBS 
+			ljmd_mpi_util_lib
+			ljmd_mpi_comm_lib
+		)
+	create_test_mpi(NAME mpi_comm NPROCS 4 SRC mpi_comm/test_mpi_comm.cpp 
+				COMMAND $<TARGET_FILE:test_mpi_comm>  LIBS ${MPI_COMM_TEST_LIBS}  )
 	
 endif()
 

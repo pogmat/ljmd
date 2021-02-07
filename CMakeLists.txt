@@ -33,6 +33,7 @@ if(ENABLE_MPI)
 					list(APPEND sub_dirs 
 						${ljmd_SOURCE_DIR}/src/mpi/mpi_io
 						${ljmd_SOURCE_DIR}/src/mpi/mpi_utils
+						${ljmd_SOURCE_DIR}/src/mpi/mpi_comm
 					)
 endif()
 
@@ -66,6 +67,7 @@ if(ENABLE_MPI)
 					${MPI_C_LINK_FLAGS} 
 					ljmd_mpi_util_lib
 					ljmd_mpi_io_lib
+					ljmd_mpi_comm_lib
 					)
 
 endif()

@@ -14,6 +14,7 @@
 #include "physics.h"
 
 #if defined(MPI_ENABLED)
+#include "mpi_headers/mpi_comm.h"
 #include "mpi_headers/mpi_io.h"
 #include "mpi_headers/mpi_utils.h"
 #include <mpi.h>
@@ -62,7 +63,7 @@ int main(int argc, char **argv) {
         }
 
 #if defined(MPI_ENABLED)
-        /*
+        
         for (int i = 0; i < nprocs; ++i) {
                 if (proc_id == i) {
                         for (int j = proc_seg.idx;
@@ -85,14 +86,15 @@ int main(int argc, char **argv) {
                 sleep(0.1);
                 MPI_Barrier(MPI_COMM_WORLD);
         }
-                */
+                
 
 #endif
 
 #if defined(MPI_ENABLED)
-        cleanup_mdsys(&sys);
-        MPI_Finalize();
-        return 0;
+        int count[nprocs];
+        int offsets[nprocs];
+        mpi_collective_comm_arrays(nprocs, proc_seg.splitting, count, offsets);
+        mpi_exchange_positions(&sys, count, offsets);
 #endif
 
         /* initialize forces and energies.*/
@@ -100,16 +102,30 @@ int main(int argc, char **argv) {
         force(&sys);
         ekin(&sys);
 
-        erg = fopen(fnames.ergfile, "w");
-        traj = fopen(fnames.trajfile, "w");
+#if defined(MPI_ENABLED)
+        if (proc_id == 0) {
+#endif
+                erg = fopen(fnames.ergfile, "w");
+                traj = fopen(fnames.trajfile, "w");
 
-        printf("Startup time: %10.3fs\n", wallclock() - t_start);
-        printf("Starting simulation with %d atoms for %d steps.\n", sys.natoms,
-               sys.nsteps);
-        printf("     NFI            TEMP            EKIN                 EPOT  "
-               "      "
-               "      ETOT\n");
-        output(&sys, erg, traj);
+                printf("Startup time: %10.3fs\n", wallclock() - t_start);
+                printf("Starting simulation with %d atoms for %d steps.\n",
+                       sys.natoms, sys.nsteps);
+                printf("     NFI            TEMP            EKIN               "
+                       "  EPOT  "
+                       "      "
+                       "      ETOT\n");
+                output(&sys, erg, traj);
+
+#if defined(MPI_ENABLED)
+        }
+#endif
+
+#if defined(MPI_ENABLED)
+        cleanup_mdsys(&sys);
+        MPI_Finalize();
+        return 0;
+#endif
 
         /* reset timer */
         t_start = wallclock();
@@ -119,7 +135,6 @@ int main(int argc, char **argv) {
         for (sys.nfi = 1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
 #if defined(MPI_ENABLED)
-                mpi_exchange_positions(nprocs, proc_id, &proc_seg, &sys);
 
 #endif
 
