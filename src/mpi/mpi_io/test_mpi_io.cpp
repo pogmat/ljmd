@@ -92,9 +92,9 @@ class MPI_send_pos_vel_test : public ::testing::Test {
 
                 if (proc_id == 0) {
 
-                        sys->rx = new double[4]{0.0, 0.1, 0.2, 0.3};
-                        sys->ry = new double[4]{0.0, 0.1, 0.2, 0.3};
-                        sys->rz = new double[4]{0.0, 0.1, 0.2, 0.3};
+                        sys->rx = new double[4]{0, 10, 20, 30};
+                        sys->ry = new double[4]{0, 10, 20, 30};
+                        sys->rz = new double[4]{0, 10, 20, 30};
 
                         vxbuf = new double[4]{0, 1, 2, 3};
                         vybuf = new double[4]{0, 1, 2, 3};
@@ -138,22 +138,11 @@ TEST_F(MPI_send_pos_vel_test, rbip) {
 
         send_pos_vel(nprocs, &proc_seg, sys, vxbuf, vybuf, vzbuf);
 
-        EXPECT_DOUBLE_EQ(sys->rx[0], 0.0);
-        EXPECT_DOUBLE_EQ(sys->rx[1], 0.1);
-        EXPECT_DOUBLE_EQ(sys->rx[2], 0.2);
-        EXPECT_DOUBLE_EQ(sys->rx[3], 0.3);
+        EXPECT_DOUBLE_EQ(sys->rx[proc_id], 10 * proc_id);
+        EXPECT_DOUBLE_EQ(sys->ry[proc_id], 10 * proc_id);
+        EXPECT_DOUBLE_EQ(sys->rz[proc_id], 10 * proc_id);
 
-        EXPECT_DOUBLE_EQ(sys->ry[0], 0.0);
-        EXPECT_DOUBLE_EQ(sys->ry[1], 0.1);
-        EXPECT_DOUBLE_EQ(sys->ry[2], 0.2);
-        EXPECT_DOUBLE_EQ(sys->ry[3], 0.3);
-
-        EXPECT_DOUBLE_EQ(sys->rz[0], 0.0);
-        EXPECT_DOUBLE_EQ(sys->rz[1], 0.1);
-        EXPECT_DOUBLE_EQ(sys->rz[2], 0.2);
-        EXPECT_DOUBLE_EQ(sys->rz[3], 0.3);
-
-        EXPECT_DOUBLE_EQ(sys->vz[0], proc_id);
+        EXPECT_DOUBLE_EQ(sys->vx[0], proc_id);
         EXPECT_DOUBLE_EQ(sys->vy[0], proc_id);
         EXPECT_DOUBLE_EQ(sys->vz[0], proc_id);
 }

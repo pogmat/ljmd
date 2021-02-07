@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
         }
 
 #if defined(MPI_ENABLED)
+        /*
         for (int i = 0; i < nprocs; ++i) {
                 if (proc_id == i) {
                         for (int j = proc_seg.idx;
@@ -84,6 +85,7 @@ int main(int argc, char **argv) {
                 sleep(0.1);
                 MPI_Barrier(MPI_COMM_WORLD);
         }
+                */
 
 #endif
 
@@ -116,9 +118,19 @@ int main(int argc, char **argv) {
         /* main MD loop */
         for (sys.nfi = 1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
+#if defined(MPI_ENABLED)
+
+#endif
+
                 /* write output, if requested */
-                if ((sys.nfi % nprint) == 0)
-                        output(&sys, erg, traj);
+#if defined(MPI_ENABLED)
+                if (proc_id == 0) {
+#endif
+                        if ((sys.nfi % nprint) == 0)
+                                output(&sys, erg, traj);
+#if defined(MPI_ENABLED)
+                }
+#endif
 
                 /* propagate system and recompute energies */
                 /* use the split versin of Verlet algorithm*/
