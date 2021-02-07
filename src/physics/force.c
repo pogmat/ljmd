@@ -11,7 +11,6 @@ static double pbc(double x, const double boxby2) {
         return x;
 }
 
-
 /* compute forces */
 void force(mdsys_t *sys) {
         double r, ffac;
