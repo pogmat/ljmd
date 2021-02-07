@@ -133,7 +133,7 @@ int mpi_initialise(int nprocs, int proc_id, arr_seg_t *proc_seg, mdsys_t *sys, F
 
 	
 	/* initialise the segment structs containing info on this proc's segment of data */
-	init_segments(nprocs, proc_id, proc_seg, sys );
+	init_segments(nprocs, proc_id, proc_seg, sys->natoms );
 	
 	printf("seg %d idx %d size %d\n",proc_seg->id,proc_seg->idx,proc_seg->size);
 	

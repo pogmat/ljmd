@@ -38,9 +38,8 @@ void split_dimension( const int nprocs,  const  int size , int splitting[3] ) {
 }
 
 
-void init_segments(int nprocs, int proc_id,  arr_seg_t *proc_seg, mdsys_t *sys ) {
+void init_segments(int nprocs, int proc_id,  arr_seg_t *proc_seg, int size ) {
 
-	int size = sys->natoms;
 	
 	int splitting[3];
 	
