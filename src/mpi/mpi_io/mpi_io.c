@@ -119,18 +119,8 @@ void send_pos_vel(int nprocs, arr_seg_t *proc_seg, mdsys_t *sys, double *vxbuf,
 
         int count[nprocs];
         int offsets[nprocs];
-        for (int p = 0; p < nprocs; ++p) {
-                if (p < proc_seg->splitting[0]) {
-                        count[p] = proc_seg->splitting[1];
-                        offsets[p] = p * proc_seg->splitting[1];
-                } else {
-                        count[p] = proc_seg->splitting[2];
-                        offsets[p] =
-                            proc_seg->splitting[0] * proc_seg->splitting[1] +
-                            (p - proc_seg->splitting[0]) *
-                                proc_seg->splitting[2];
-                }
-        }
+
+        mpi_collective_comm_arrays(nprocs, proc_seg->splitting, count, offsets);
 
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Request rxreq, ryreq, rzreq, vxreq, vyreq, vzreq;

@@ -31,7 +31,8 @@ void split_dimension(const int nprocs, const int size, int splitting[3]) {
         splitting[2] = h2;
 }
 
-void init_segments(int nprocs, int proc_id, arr_seg_t *proc_seg, int size) {
+void init_segments(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
+                   const int size) {
 
         int splitting[3];
 
@@ -47,4 +48,20 @@ void init_segments(int nprocs, int proc_id, arr_seg_t *proc_seg, int size) {
         }
         proc_seg->id = proc_id;
         memcpy(proc_seg->splitting, splitting, 3 * sizeof(int));
+}
+
+extern void mpi_collective_comm_arrays(const int nprocs,
+                                       const int *const splitting, int *count,
+                                       int *offsets) {
+
+        for (int p = 0; p < nprocs; ++p) {
+                if (p < splitting[0]) {
+                        count[p] = splitting[1];
+                        offsets[p] = p * splitting[1];
+                } else {
+                        count[p] = splitting[2];
+                        offsets[p] = splitting[0] * splitting[1] +
+                                     (p - splitting[0]) * splitting[2];
+                }
+        }
 }

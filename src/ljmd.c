@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
         for (sys.nfi = 1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
 #if defined(MPI_ENABLED)
+                mpi_exchange_positions(nprocs, proc_id, &proc_seg, &sys);
 
 #endif
 
