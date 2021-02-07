@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include <string>
 
-#include "mpi_test_env.h"
+#include "mpi_headers/mpi_test_env.h"
 
 class MPITest : public ::testing::Test {
       protected:

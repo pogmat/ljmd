@@ -83,9 +83,11 @@ if(ENABLE_MPI)
 	message("fount MPI C compiler : ${MPI_C_COMPILER}")
 	message("fount MPI CXX compiler : ${MPI_CXX_COMPILER}")
 	
+	
+	#generic MPI test
 	function(create_test_mpi)
 		
-		add_executable(test_mpi ${ljmd_SOURCE_FILES}/mpi/test_mpi.cpp)
+		add_executable(test_mpi ${ljmd_SOURCE_FILES}/mpi/test_mpi_basic.cpp)
 		set_target_properties(test_mpi PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 		target_include_directories(test_mpi PRIVATE ${MPI_CXX_INCLUDE_PATH} )
 		target_link_libraries(test_mpi PRIVATE GTest::GTestMain GTest::GTest ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS}  )
@@ -105,6 +107,17 @@ if(ENABLE_MPI)
 	endfunction(create_test_mpi)
 	
 	create_test_mpi(NPROCS 4 COMMAND $<TARGET_FILE:test_mpi> )
+	
+	
+	# MPI utils test
+	
+	add_executable(test_mpi_utils ${ljmd_SOURCE_FILES}/mpi/mpi_utils/test_mpi_utils.cpp)
+	set_target_properties(test_mpi_utils PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+	target_include_directories(test_mpi_utils PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/mpi/mpi_utils)
+	target_link_libraries(test_mpi_utils PRIVATE GTest::GTestMain GTest::GTest ljmd_mpi_util_lib m)
+	add_test(NAME mpi_utils COMMAND test_mpi_utils )
+	
+	
 	
 endif()
 

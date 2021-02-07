@@ -30,7 +30,10 @@ endif()
 
 
 if(ENABLE_MPI)
-					list(APPEND sub_dirs ${ljmd_SOURCE_DIR}/src/mpi )
+					list(APPEND sub_dirs 
+						${ljmd_SOURCE_DIR}/src/mpi/mpi_io
+						${ljmd_SOURCE_DIR}/src/mpi/mpi_utils
+					)
 endif()
 
 
@@ -55,14 +58,14 @@ target_link_libraries(serial PRIVATE
 
 
 if(ENABLE_MPI)
-
 	target_link_libraries(ljmd_mpi PRIVATE 
 					ljmd_phys_lib
 					ljmd_io_lib
 					ljmd_common_lib
-					ljmd_mpi_lib
 					${MPI_C_LIBRARIES}
 					${MPI_C_LINK_FLAGS} 
+					ljmd_mpi_util_lib
+					ljmd_mpi_io_lib
 					)
 
 endif()
