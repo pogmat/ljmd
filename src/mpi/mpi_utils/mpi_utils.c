@@ -43,7 +43,7 @@ void init_segments(int nprocs, int proc_id, arr_seg_t *proc_seg, int size) {
         } else {
                 proc_seg->idx = splitting[0] * splitting[1] +
                                 (proc_id - splitting[0]) * splitting[2];
-                proc_seg->size = splitting[1];
+                proc_seg->size = splitting[2];
         }
         proc_seg->id = proc_id;
         memcpy(proc_seg->splitting, splitting, 3 * sizeof(int));

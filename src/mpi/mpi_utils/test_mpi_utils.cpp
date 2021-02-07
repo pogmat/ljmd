@@ -38,3 +38,31 @@ TEST_P(test_split_dimension, all) {
 
 INSTANTIATE_TEST_SUITE_P(test_split_dimension_p, test_split_dimension,
                          ::testing::Values(1, 4, 10));
+
+class test_init_segments : public ::testing::Test {
+
+      protected:
+        int size, nprocs;
+        arr_seg_t proc_seg;
+
+        virtual void SetUp() override {
+                size = 998;
+                nprocs = 4;
+        }
+
+        virtual void TearDown() override {}
+};
+
+TEST_F(test_init_segments, all) {
+
+        int idx_arr[4]{0, 250, 500, 749};
+        int size_arr[4]{250, 250, 249, 249};
+
+        for (int proc_id = 0; proc_id < nprocs; ++proc_id) {
+                init_segments(nprocs, proc_id, &proc_seg, size);
+
+                EXPECT_EQ(proc_seg.id, proc_id);
+                EXPECT_EQ(proc_seg.idx, idx_arr[proc_id]);
+                EXPECT_EQ(proc_seg.size, size_arr[proc_id]);
+        }
+}

@@ -85,15 +85,15 @@ if(ENABLE_MPI)
 		set(TEST_NPROCS 1)
 		
 		set(oneValueArgs NAME NPROCS)
-		set(multiValueArgs COMMAND LIBS)
+		set(multiValueArgs SRC COMMAND LIBS)
 		cmake_parse_arguments(TEST  "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 		
 		set( TEST_MPI_NAME "test_${TEST_NAME}" )
 		
-		#message(" name ${TEST_NAME} nprocs ${TEST_NPROCS} command ${TEST_COMMAND} libs ${TEST_LIBS}")
+		#message(" name ${TEST_NAME} nprocs ${TEST_NPROCS} src ${TEST_SRC} command ${TEST_COMMAND} libs ${TEST_LIBS}")
 		#message("${TEST_NAME} command : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_NPROCS} ${MPIEXEC_PREFLAGS} ./${TEST_MPI_NAME} ${TEST_COMMAND}")
 		
-		add_executable(${TEST_MPI_NAME} ${ljmd_SOURCE_FILES}/mpi/test_mpi_basic.cpp)
+		add_executable(${TEST_MPI_NAME} ${ljmd_SOURCE_FILES}/mpi/${TEST_SRC})
 		set_target_properties(${TEST_MPI_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 		target_include_directories(${TEST_MPI_NAME} PRIVATE ${MPI_CXX_INCLUDE_PATH} )
 		target_link_libraries(${TEST_MPI_NAME} PRIVATE GTest::GTestMain GTest::GTest ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${TEST_LIBS} )
@@ -106,7 +106,9 @@ if(ENABLE_MPI)
 	endfunction(create_test_mpi)
 	
 
-	create_test_mpi(NAME mpi NPROCS 4 COMMAND $<TARGET_FILE:test_mpi> LIBS )
+	#Basic MPI test
+	
+	create_test_mpi(NAME mpi_basic NPROCS 4 SRC test_mpi_basic.cpp COMMAND $<TARGET_FILE:test_mpi_basic> LIBS )
 	
 	
 	# MPI utils test
@@ -122,8 +124,11 @@ if(ENABLE_MPI)
 	set( MPI_IO_TEST_LIBS 
 			ljmd_mpi_io_lib
 			ljmd_mpi_util_lib
+			ljmd_common_lib
 		)
-	create_test_mpi(NAME mpi_io NPROCS 4 COMMAND $<TARGET_FILE:test_mpi_io> < ${ljmd_SOURCE_DIR}/examples/argon_108.inp LIBS ${MPI_IO_TEST_LIBS} )
+	create_test_mpi(NAME mpi_io NPROCS 4 SRC mpi_io/test_mpi_io.cpp 
+				COMMAND $<TARGET_FILE:test_mpi_io>  LIBS ${MPI_IO_TEST_LIBS}  )
+	configure_file(${ljmd_SOURCE_DIR}/src/mpi/mpi_io/test_params.inp ${ljmd_SOURCE_DIR}/build/test_params.inp COPYONLY)
 	
 endif()
 
