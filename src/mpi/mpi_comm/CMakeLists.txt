@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+if(ENABLE_MPI)
+
 find_package(MPI REQUIRED) 
 
 
@@ -15,4 +17,6 @@ target_link_libraries(ljmd_mpi_comm_lib PRIVATE
 					${MPI_C_LIBRARIES}
 					${MPI_C_LINK_FLAGS} 
 					)
+target_compile_definitions(ljmd_mpi_comm_lib PRIVATE MPI_ENABLED=1 )
 
+endif()

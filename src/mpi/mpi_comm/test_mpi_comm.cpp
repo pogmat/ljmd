@@ -136,7 +136,7 @@ TEST_F(MPI_xch_pos, basic) {
         }
 }
 
-class MPI_red_ekin_temp : public ::testing::Test {
+class MPI_red_UKT : public ::testing::Test {
       protected:
         int nprocs;
         int proc_id;
@@ -152,18 +152,20 @@ class MPI_red_ekin_temp : public ::testing::Test {
 
                 sys->ekin = 1.0;
                 sys->temp = 10.0;
+                sys->epot = 2.0;
         }
 
         void TearDown() { delete sys; }
 };
 
-TEST_F(MPI_red_ekin_temp, basic) {
+TEST_F(MPI_red_UKT, basic) {
 
-        mpi_reduce_ekin_temp(sys);
+        mpi_reduce_UKT(sys);
 
         if (proc_id == 0) {
                 EXPECT_DOUBLE_EQ(sys->ekin, nprocs);
                 EXPECT_DOUBLE_EQ(sys->temp, 10.0 * nprocs);
+                EXPECT_DOUBLE_EQ(sys->epot, 2.0 * nprocs);
         }
 }
 

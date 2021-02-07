@@ -1,8 +1,6 @@
 #ifndef MPI_UTIL_H
 #define MPI_UTIL_H
 
-#include "physics.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

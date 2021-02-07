@@ -77,8 +77,10 @@ void mpi_exchange_positions(mdsys_t *sys, const int *count,
         MPI_Wait(&rzreq, MPI_STATUS_IGNORE);
 }
 
-void mpi_reduce_ekin_temp(mdsys_t *sys) {
+void mpi_reduce_UKT(mdsys_t *sys) {
 
+        MPI_Allreduce(MPI_IN_PLACE, &sys->epot, 1, MPI_DOUBLE, MPI_SUM,
+                      MPI_COMM_WORLD);
         MPI_Allreduce(MPI_IN_PLACE, &sys->ekin, 1, MPI_DOUBLE, MPI_SUM,
                       MPI_COMM_WORLD);
         MPI_Allreduce(MPI_IN_PLACE, &sys->temp, 1, MPI_DOUBLE, MPI_SUM,

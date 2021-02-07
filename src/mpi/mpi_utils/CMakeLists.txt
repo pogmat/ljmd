@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-find_package(MPI REQUIRED) 
-
+if(ENABLE_MPI)
 
 #header files directory
 include_directories(${ljmd_SOURCE_DIR}/include)
@@ -11,9 +10,7 @@ include_directories(${ljmd_SOURCE_DIR}/include)
 add_library(ljmd_mpi_util_lib mpi_utils.c )
 
 
-target_link_libraries(ljmd_mpi_util_lib PRIVATE 
-					m
-					#${MPI_C_LIBRARIES}
-					#${MPI_C_LINK_FLAGS} 
-					)
+target_link_libraries(ljmd_mpi_util_lib PRIVATE m )
+target_compile_definitions(ljmd_mpi_util_lib PRIVATE MPI_ENABLED=1 )
 
+endif()

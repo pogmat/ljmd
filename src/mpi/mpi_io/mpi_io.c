@@ -99,9 +99,6 @@ int read_restfile(const char *restfile, mdsys_t *sys) {
                                sys->vz + i);
                 }
                 fclose(fp);
-                azzero(sys->fx, sys->natoms);
-                azzero(sys->fy, sys->natoms);
-                azzero(sys->fz, sys->natoms);
         } else {
                 return 3;
         }
@@ -141,9 +138,9 @@ int mpi_initialise(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
         sys->ry = (double *)malloc(sys->natoms * sizeof(double));
         sys->rz = (double *)malloc(sys->natoms * sizeof(double));
 
-        sys->fx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fz = (double *)malloc(sys->natoms * sizeof(double));
+        sys->fx = (double *)malloc(proc_seg->size * sizeof(double));
+        sys->fy = (double *)malloc(proc_seg->size * sizeof(double));
+        sys->fz = (double *)malloc(proc_seg->size * sizeof(double));
 
         /* 	velocity memory is  handled differently than positions or forces
            memory master needs a full-size buffer for input but for simulation
