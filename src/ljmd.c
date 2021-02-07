@@ -57,11 +57,11 @@ int main(int argc, char **argv) {
                         output(&sys, erg, traj);
 
                 /* propagate system and recompute energies */
-		/* use the split versin of Verlet algorithm*/
+                /* use the split versin of Verlet algorithm*/
                 verlet_1(&sys);
-		force(&sys);
-		verlet_2(&sys);
-				
+                force(&sys);
+                verlet_2(&sys);
+
                 ekin(&sys);
         }
         /**************************************************/
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
         fclose(erg);
         fclose(traj);
 
-	cleanup_mdsys(&sys);
+        cleanup_mdsys(&sys);
 
         return 0;
 }

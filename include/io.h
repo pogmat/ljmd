@@ -6,8 +6,7 @@
 #include "physics.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* generic file- or pathname buffer length */
@@ -20,12 +19,12 @@ struct _file_names_ {
 };
 typedef struct _file_names_ file_names;
 
-extern int initialise(mdsys_t *sys, FILE *infile ,file_names *fnames, int *nprint);
+extern int initialise(mdsys_t *sys, FILE *infile, file_names *fnames,
+                      int *nprint);
 extern void output(mdsys_t *sys, FILE *erg, FILE *traj);
-
 
 #ifdef __cplusplus
 }
 #endif
-	
+
 #endif

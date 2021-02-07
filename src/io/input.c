@@ -4,7 +4,6 @@
 
 #include "io.h"
 
-
 /* helper function: read a line and then return
    the first string with whitespace stripped off */
 static int get_a_line(FILE *fp, char *buf) {
@@ -37,12 +36,11 @@ static int get_a_line(FILE *fp, char *buf) {
         return 0;
 }
 
-
 /* 	handles parsing of initialisation file read through stdin
         allocates the position and velocity arrays and reads
         the restart file with the ICs
 */
-int initialise(mdsys_t *sys, FILE *infile ,file_names *fnames, int *nprint) {
+int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
 
         char line[BLEN], restfile[BLEN];
         FILE *fp;
