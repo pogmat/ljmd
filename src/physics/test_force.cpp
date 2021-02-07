@@ -20,6 +20,10 @@ TEST(ForceTestSingle, single) {
         mdsys_t *sys = new mdsys_t;
         sys->natoms = 1;
 
+	sys->rx = new double[1];
+	sys->ry = new double[1];
+	sys->rz = new double[1];
+	
         sys->fx = new double[1];
         sys->fy = new double[1];
         sys->fz = new double[1];
