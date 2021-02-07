@@ -34,6 +34,7 @@ if(ENABLE_MPI)
 						${ljmd_SOURCE_DIR}/src/mpi/mpi_io
 						${ljmd_SOURCE_DIR}/src/mpi/mpi_utils
 						${ljmd_SOURCE_DIR}/src/mpi/mpi_comm
+						${ljmd_SOURCE_DIR}/src/mpi/mpi_physics
 					)
 endif()
 
@@ -60,7 +61,6 @@ target_link_libraries(serial PRIVATE
 
 if(ENABLE_MPI)
 	target_link_libraries(ljmd_mpi PRIVATE 
-					ljmd_phys_lib
 					ljmd_io_lib
 					ljmd_common_lib
 					${MPI_C_LIBRARIES}
@@ -68,6 +68,7 @@ if(ENABLE_MPI)
 					ljmd_mpi_util_lib
 					ljmd_mpi_io_lib
 					ljmd_mpi_comm_lib
+					ljmd_mpi_phys_lib
 					)
 
 endif()
@@ -87,8 +88,7 @@ message("-- ljmd main compiler flags are: ${LJMD_COMPILE_OPT}")
 
 if(ENABLE_MPI)
 	target_compile_definitions(ljmd_mpi PRIVATE MPI_ENABLED=1 LJMD_VERSION=1.0)
+	target_compile_options (ljmd_mpi PRIVATE ${main_flags}  )
 endif()
-
-
 
 
