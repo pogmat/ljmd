@@ -135,11 +135,19 @@ void send_pos_vel(int nprocs, arr_seg_t *proc_seg, mdsys_t *sys, double *vxbuf,
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Request rxreq, ryreq, rzreq, vxreq, vyreq, vzreq;
 
-        /*broadcast all the positions */
-        MPI_Ibcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &rxreq);
-        MPI_Ibcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &ryreq);
-        MPI_Ibcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &rzreq);
+        /*scatter all the positions */
 
+        MPI_Iscatterv(sys->rx, count, offsets, MPI_DOUBLE,
+                      &sys->rx[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
+                      MPI_COMM_WORLD, &rxreq);
+        MPI_Iscatterv(sys->ry, count, offsets, MPI_DOUBLE,
+                      &sys->ry[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
+                      MPI_COMM_WORLD, &ryreq);
+        MPI_Iscatterv(sys->rz, count, offsets, MPI_DOUBLE,
+                      &sys->rz[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
+                      MPI_COMM_WORLD, &rzreq);
+
+        /* scatter all the velocites*/
         MPI_Iscatterv(vxbuf, count, offsets, MPI_DOUBLE, sys->vx,
                       proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vxreq);
         MPI_Iscatterv(vybuf, count, offsets, MPI_DOUBLE, sys->vy,
