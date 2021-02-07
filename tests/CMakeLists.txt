@@ -105,6 +105,7 @@ if(ENABLE_MPI)
 
 	endfunction(create_test_mpi)
 	
+
 	create_test_mpi(NAME mpi NPROCS 4 COMMAND $<TARGET_FILE:test_mpi> LIBS )
 	
 	
@@ -117,6 +118,12 @@ if(ENABLE_MPI)
 	add_test(NAME mpi_utils COMMAND test_mpi_utils )
 	
 	
+	# MPI IO testcd bui	
+	set( MPI_IO_TEST_LIBS 
+			ljmd_mpi_io_lib
+			ljmd_mpi_util_lib
+		)
+	create_test_mpi(NAME mpi_io NPROCS 4 COMMAND $<TARGET_FILE:test_mpi_io> < ${ljmd_SOURCE_DIR}/examples/argon_108.inp LIBS ${MPI_IO_TEST_LIBS} )
 	
 endif()
 
