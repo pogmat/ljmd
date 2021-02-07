@@ -13,6 +13,8 @@ extern void mpi_send_pos_vel(const int nprocs, const arr_seg_t *proc_seg,
 extern void mpi_exchange_positions(mdsys_t *sys, const int *count,
                                    const int *offsets);
 
+extern void mpi_reduce_ekin_temp(mdsys_t *sys);
+
 #ifdef __cplusplus
 }
 #endif

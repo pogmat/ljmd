@@ -136,6 +136,37 @@ TEST_F(MPI_xch_pos, basic) {
         }
 }
 
+class MPI_red_ekin_temp : public ::testing::Test {
+      protected:
+        int nprocs;
+        int proc_id;
+        mdsys_t *sys;
+
+        void SetUp() {
+                nprocs = MPITestEnv::get_mpi_procs();
+                ASSERT_EQ(nprocs, 4);
+
+                proc_id = MPITestEnv::get_mpi_rank();
+                sys = new mdsys_t;
+                sys->natoms = 4;
+
+                sys->ekin = 1.0;
+                sys->temp = 10.0;
+        }
+
+        void TearDown() { delete sys; }
+};
+
+TEST_F(MPI_red_ekin_temp, basic) {
+
+        mpi_reduce_ekin_temp(sys);
+
+        if (proc_id == 0) {
+                EXPECT_DOUBLE_EQ(sys->ekin, nprocs);
+                EXPECT_DOUBLE_EQ(sys->temp, 10.0 * nprocs);
+        }
+}
+
 int main(int argc, char **argv) {
 
         std::string command_line_arg(argc == 2 ? argv[1] : "");
