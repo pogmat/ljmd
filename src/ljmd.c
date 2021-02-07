@@ -73,6 +73,17 @@ int main(int argc, char **argv) {
                 sleep(0.1);
                 MPI_Barrier(MPI_COMM_WORLD);
         }
+        for (int i = 0; i < nprocs; ++i) {
+                if (proc_id == i) {
+                        for (int j = 0; j < (proc_seg.size); ++j) {
+                                printf("%d  %20.8f %20.8f %20.8f\n",
+                                       j + proc_seg.idx + 1, sys.vx[j],
+                                       sys.vy[j], sys.vz[j]);
+                        }
+                }
+                sleep(0.1);
+                MPI_Barrier(MPI_COMM_WORLD);
+        }
 
 #endif
 
