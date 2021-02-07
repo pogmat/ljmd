@@ -66,3 +66,33 @@ TEST_F(test_init_segments, all) {
                 EXPECT_EQ(proc_seg.size, size_arr[proc_id]);
         }
 }
+
+class test_comm_arrays : public ::testing::Test {
+
+      protected:
+        int nprocs;
+        int *splitting;
+
+        virtual void SetUp() override {
+                nprocs = 4;
+                splitting = new int[3]{2, 250, 249};
+        }
+
+        virtual void TearDown() override { delete[] splitting; }
+};
+
+TEST_F(test_comm_arrays, all) {
+
+        int count[nprocs];
+        int offsets[nprocs];
+
+        int idx_arr[4]{0, 250, 500, 749};
+        int size_arr[4]{250, 250, 249, 249};
+
+        mpi_collective_comm_arrays(nprocs, splitting, count, offsets);
+
+        for (int proc_id = 0; proc_id < nprocs; ++proc_id) {
+                EXPECT_EQ(count[proc_id], size_arr[proc_id]);
+                EXPECT_EQ(offsets[proc_id], idx_arr[proc_id]);
+        }
+}
