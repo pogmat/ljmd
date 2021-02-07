@@ -3,7 +3,7 @@
 /* inclusion of source file is needed
  * since we want to test a static function  */
 extern "C" {
-		#include "force.c"
+#include "force.c"
 }
 
 TEST(pbc_test, inside) {
@@ -39,9 +39,9 @@ TEST(ForceTestSingle, single) {
 
 class ForceTest : public ::testing::TestWithParam<double> {
 
-protected:
+      protected:
         mdsys_t *sys;
-		int eps_param = GetParam();
+        int eps_param = GetParam();
 
         void SetUp() {
                 sys = new mdsys_t;
@@ -116,8 +116,8 @@ TEST_P(ForceTest, longrange) {
 
         force(sys);
 
-        double exp_epot = -eps_param*63.0 / 1024.0;
-        double exp_ff = -eps_param*93.0 / 512.0;
+        double exp_epot = -eps_param * 63.0 / 1024.0;
+        double exp_ff = -eps_param * 93.0 / 512.0;
 
         ASSERT_DOUBLE_EQ(sys->fx[0], -exp_ff);
         ASSERT_DOUBLE_EQ(sys->fx[1], exp_ff);
@@ -128,6 +128,5 @@ TEST_P(ForceTest, longrange) {
         ASSERT_DOUBLE_EQ(sys->epot, exp_epot);
 }
 
-INSTANTIATE_TEST_SUITE_P(ForceTest_parametric,
-			 ForceTest,
-			 ::testing::Values(0.0, 0.5, 1.0));
+INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
+                         ::testing::Values(0.0, 0.5, 1.0));

@@ -78,33 +78,57 @@ endif()
 
 if(ENABLE_MPI)
 	find_package(MPI REQUIRED) 
+		
 	
-
-	message("fount MPI C compiler : ${MPI_C_COMPILER}")
-	message("fount MPI CXX compiler : ${MPI_CXX_COMPILER}")
-	
+	#generic MPI test
 	function(create_test_mpi)
+		set(TEST_NPROCS 1)
 		
-		add_executable(test_mpi ${ljmd_SOURCE_FILES}/mpi/test_mpi.cpp)
-		set_target_properties(test_mpi PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
-		target_include_directories(test_mpi PRIVATE ${MPI_CXX_INCLUDE_PATH} )
-		target_link_libraries(test_mpi PRIVATE GTest::GTestMain GTest::GTest ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS}  )
+		set(oneValueArgs NAME NPROCS)
+		set(multiValueArgs SRC COMMAND LIBS)
+		cmake_parse_arguments(TEST  "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 		
-		set(TEST_MPI_NPROCS 4)
+		set( TEST_MPI_NAME "test_${TEST_NAME}" )
 		
-		cmake_parse_arguments(TEST_MPI_ "" "NPROCS" "COMMAND" ${ARGN})
-		message("${TEST_MPI_NAME} command : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_MPI_NPROCS} ${MPIEXEC_PREFLAGS} ./test_mpi ${TEST_MPI__COMMAND}")
+		#message(" name ${TEST_NAME} nprocs ${TEST_NPROCS} src ${TEST_SRC} command ${TEST_COMMAND} libs ${TEST_LIBS}")
+		#message("${TEST_NAME} command : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_NPROCS} ${MPIEXEC_PREFLAGS} ./${TEST_MPI_NAME} ${TEST_COMMAND}")
 		
-		add_test(
-			NAME mpi 
-			COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_MPI_NPROCS} ${TEST_MPI__COMMAND} ${TEST_MPI_NPROCS}
-		)
-		
-		
+		add_executable(${TEST_MPI_NAME} ${ljmd_SOURCE_FILES}/mpi/${TEST_SRC})
+		set_target_properties(${TEST_MPI_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+		target_include_directories(${TEST_MPI_NAME} PRIVATE ${MPI_CXX_INCLUDE_PATH} )
+		target_link_libraries(${TEST_MPI_NAME} PRIVATE GTest::GTestMain GTest::GTest ${MPI_CXX_LIBRARIES} ${MPI_CXX_LINK_FLAGS} ${TEST_LIBS} )
 	
+		add_test(
+			NAME ${TEST_NAME} 
+			COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_NPROCS} ${TEST_COMMAND} ${TEST_NPROCS}
+		)
+
 	endfunction(create_test_mpi)
 	
-	create_test_mpi(NPROCS 4 COMMAND $<TARGET_FILE:test_mpi> )
+
+	#Basic MPI test
+	
+	create_test_mpi(NAME mpi_basic NPROCS 4 SRC test_mpi_basic.cpp COMMAND $<TARGET_FILE:test_mpi_basic> LIBS )
+	
+	
+	# MPI utils test
+	
+	add_executable(test_mpi_utils ${ljmd_SOURCE_FILES}/mpi/mpi_utils/test_mpi_utils.cpp)
+	set_target_properties(test_mpi_utils PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+	target_include_directories(test_mpi_utils PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/mpi/mpi_utils)
+	target_link_libraries(test_mpi_utils PRIVATE GTest::GTestMain GTest::GTest ljmd_mpi_util_lib m)
+	add_test(NAME mpi_utils COMMAND test_mpi_utils )
+	
+	
+	# MPI IO testcd bui	
+	set( MPI_IO_TEST_LIBS 
+			ljmd_mpi_io_lib
+			ljmd_mpi_util_lib
+			ljmd_common_lib
+		)
+	create_test_mpi(NAME mpi_io NPROCS 4 SRC mpi_io/test_mpi_io.cpp 
+				COMMAND $<TARGET_FILE:test_mpi_io>  LIBS ${MPI_IO_TEST_LIBS}  )
+	configure_file(${ljmd_SOURCE_DIR}/src/mpi/mpi_io/test_params.inp ${ljmd_SOURCE_DIR}/build/test_params.inp COPYONLY)
 	
 endif()
 
