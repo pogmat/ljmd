@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdio.h>
 
 #include "physics.h"
 
@@ -15,9 +16,9 @@ static double pbc(double x, const double boxby2) {
 /* compute forces */
 void force(mdsys_t *sys) {
         double rsq, ffac;
-        double rx, ry, rz;
+        vec3_t r;
         int i, j;
-
+	
         /* zero energy and forces */
         sys->epot = 0.0;
         azzero(sys->f, sys->natoms);
@@ -26,14 +27,24 @@ void force(mdsys_t *sys) {
 	double c6  = 4.0 * sys->epsilon * pow(sys->sigma,  6.0);
 	double rcsq = sys->rcut * sys->rcut;
 	double r6, rinv;
-        for (i = 0; i < (sys->natoms); ++i) {
+	//double r1x, r1y, r1z;
+	//double f1x, f1y, f1z;
+	vec3_t r1;
+	vec3_t f1;
+	for (i = 0; i < (sys->natoms); ++i) {
+		r1.x = sys->r[i].x;
+		r1.y = sys->r[i].y;
+		r1.z = sys->r[i].z;
+		f1.x = 0.0;
+		f1.y = 0.0;
+		f1.z = 0.0;
                 for (j = i + 1; j < (sys->natoms); ++j) {
-
                         /* get distance between particle i and j */
-                        rx = pbc(sys->r[i].x - sys->r[j].x, 0.5 * sys->box);
-                        ry = pbc(sys->r[i].y - sys->r[j].y, 0.5 * sys->box);
-                        rz = pbc(sys->r[i].z - sys->r[j].z, 0.5 * sys->box);
-                        rsq = rx * rx + ry * ry + rz * rz;
+                        r.x = pbc(sys->r[i].x - sys->r[j].x, 0.5 * sys->box);
+                        r.y = pbc(sys->r[i].y - sys->r[j].y, 0.5 * sys->box);
+                        r.z = pbc(sys->r[i].z - sys->r[j].z, 0.5 * sys->box);
+
+                        rsq = r.x * r.x + r.y * r.y + r.z * r.z;
 
                         /* compute force and energy if within cutoff */
                         if (rsq < rcsq) {
@@ -42,13 +53,18 @@ void force(mdsys_t *sys) {
 				ffac = (12.0 * c12 * r6 - 6.0 * c6) * r6 * rinv;
 				sys->epot += r6 * (c12 * r6 - c6);
 
-                                sys->f[i].x += rx * ffac;
-                                sys->f[i].y += ry * ffac;
-                                sys->f[i].z += rz * ffac;
-				sys->f[j].x -= rx * ffac;
-				sys->f[j].y -= ry * ffac;
-				sys->f[j].z -= rz * ffac;
+
+                                f1.x += r.x * ffac;
+                                f1.y += r.y * ffac;
+                                f1.z += r.z * ffac;
+				sys->f[j].x -= r.x * ffac;
+				sys->f[j].y -= r.y * ffac;
+				sys->f[j].z -= r.z * ffac;
+
                         }
                 }
+		sys->f[i].x += f1.x;
+		sys->f[i].y += f1.y;
+		sys->f[i].z += f1.z;
         }
 }

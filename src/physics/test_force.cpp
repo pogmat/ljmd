@@ -21,6 +21,8 @@ TEST(ForceTestSingle, single) {
         sys->natoms = 1;
 
         sys->f = new vec3_t[1];
+	sys->r = new vec3_t[1];
+
 
         force(sys);
 
