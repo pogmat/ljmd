@@ -10,6 +10,20 @@ static void cleanup_double(double **p) {
 	}
 }
 
+static void cleanup_int(int **p) {
+	if (*p) {
+		free(*p);
+		*p = NULL;
+	}
+}
+
+static void cleanup_cell_t(cell_t **p) {
+	if (*p) {
+		free(*p);
+		*p = NULL;
+	}
+}	
+
 void cleanup_mdsys(mdsys_t *sys) {
 	cleanup_double(&sys->rx);
 	cleanup_double(&sys->ry);
@@ -20,4 +34,6 @@ void cleanup_mdsys(mdsys_t *sys) {
 	cleanup_double(&sys->fx);
 	cleanup_double(&sys->fy);
 	cleanup_double(&sys->fz);
+	cleanup_int(&sys->cellpairs);
+	cleanup_cell_t(&sys->cells);
 }

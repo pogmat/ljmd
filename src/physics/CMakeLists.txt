@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 include_directories(${ljmd_SOURCE_DIR}/include)
 
 #target library name and sources
-add_library(ljmd_phys_lib integration.c force.c ekin.c utils.c)
+add_library(ljmd_phys_lib integration.c force.c ekin.c utils.c cell.c)
 target_link_libraries(ljmd_phys_lib PRIVATE m)
 
 #list of compilation options

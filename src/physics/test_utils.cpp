@@ -34,6 +34,8 @@ TEST(cleanup_mdsys_test, initialized)
 	sys.fx = (double*)calloc(2, sizeof(double));
 	sys.fy = (double*)calloc(2, sizeof(double));
 	sys.fz = (double*)calloc(2, sizeof(double));
+	sys.cells = (cell_t*)calloc(2, sizeof(cell_t));
+	sys.cellpairs = (int*)calloc(2, sizeof(int));
 	cleanup_mdsys(&sys);
 	ASSERT_EQ(sys.rx, nullptr);
 	ASSERT_EQ(sys.ry, nullptr);
@@ -44,4 +46,6 @@ TEST(cleanup_mdsys_test, initialized)
 	ASSERT_EQ(sys.fx, nullptr);
 	ASSERT_EQ(sys.fy, nullptr);
 	ASSERT_EQ(sys.fz, nullptr);
+	ASSERT_EQ(sys.cells, nullptr);
+	ASSERT_EQ(sys.cellpairs, nullptr);
 }

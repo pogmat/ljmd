@@ -36,7 +36,6 @@ target_link_libraries(test_utils PRIVATE GTest::GTestMain GTest::GTest ljmd_phys
 add_test(NAME utils COMMAND test_utils )
 
 
-
 # force tests
 
 add_executable(test_force ${ljmd_SOURCE_FILES}/physics/test_force.cpp)
@@ -44,6 +43,15 @@ set_target_properties(test_force PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOUR
 target_include_directories(test_force PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
 target_link_libraries(test_force PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
 add_test(NAME force COMMAND test_force )
+
+
+# cell test
+
+add_executable(test_cell ${ljmd_SOURCE_FILES}/physics/test_cell.cpp)
+set_target_properties(test_cell PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_cell PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
+target_link_libraries(test_cell PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
+add_test(NAME cell COMMAND test_cell )
 
 
 # ekin and temp tests
@@ -63,6 +71,7 @@ target_link_libraries(test_verlet PRIVATE GTest::GTestMain GTest::GTest ljmd_phy
 add_test(NAME verlet COMMAND test_verlet )
 
 # reference test
+
 find_program(BASH_PROGRAM bash)
 find_program(AWK_PROGRAM awk)
 find_program(CMP_PROGRAM cmp)
