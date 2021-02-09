@@ -17,7 +17,7 @@ if(ENABLE_MPI)
 		#message(" name ${TEST_NAME} nprocs ${TEST_NPROCS} src ${TEST_SRC} command ${TEST_COMMAND} libs ${TEST_LIBS}")
 		#message("${TEST_NAME} command : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_NPROCS} ${MPIEXEC_PREFLAGS} ./${TEST_MPI_NAME} ${TEST_COMMAND}")
 		
-		add_executable(${TEST_MPI_NAME} ${ljmd_SOURCE_FILES}/mpi/${TEST_SRC})
+		add_executable(${TEST_MPI_NAME} ${TEST_SRC})
 		set_target_properties(${TEST_MPI_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 		target_compile_definitions(${TEST_MPI_NAME} PRIVATE MPI_ENABLED=1 )
 		target_include_directories(${TEST_MPI_NAME} PRIVATE ${MPI_CXX_INCLUDE_PATH} )
@@ -71,7 +71,9 @@ target_link_libraries(test_utils PRIVATE GTest::GTestMain GTest::GTest ljmd_phys
 add_test(NAME utils COMMAND test_utils )
 
 
+
 if(NOT ENABLE_MPI)
+
 # force tests
 
 add_executable(test_force ${ljmd_SOURCE_FILES}/physics/test_force.cpp)
@@ -83,11 +85,14 @@ add_test(NAME force COMMAND test_force )
 
 # ekin and temp tests
 
+
 add_executable(test_ek_t ${ljmd_SOURCE_FILES}/physics/test_ekin.cpp)
 set_target_properties(test_ek_t PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 target_include_directories(test_ek_t PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
 target_link_libraries(test_ek_t PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
 add_test(NAME ekin COMMAND test_ek_t )
+
+
 
 # verlet integration tests
 
@@ -104,7 +109,13 @@ find_program(BASH_PROGRAM bash)
 find_program(AWK_PROGRAM awk)
 find_program(CMP_PROGRAM cmp)
 if(BASH_PROGRAM AND AWK_PROGRAM AND CMP_PROGRAM)
-    add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH})
+	
+	if(ENABLE_MPI)
+		list( APPEND comparison_test_args $<TARGET_FILE:mpi> ${CMAKE_MODULE_PATH} "mpi" )
+	else()
+		list( APPEND comparison_test_args $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH} )
+	endif()
+    add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_test_args} )
 endif()
 
 
@@ -114,11 +125,9 @@ endif()
 #mpi tests
 
 if(ENABLE_MPI)
-
-
 	#Basic MPI test
 	
-	create_test_mpi(NAME mpi_basic NPROCS 4 SRC test_mpi_basic.cpp COMMAND $<TARGET_FILE:test_mpi_basic> LIBS )
+	create_test_mpi(NAME mpi_basic NPROCS 4 SRC ${ljmd_SOURCE_FILES}/mpi/test_mpi_basic.cpp COMMAND $<TARGET_FILE:test_mpi_basic> LIBS )
 	
 	
 	# MPI utils test
@@ -135,7 +144,7 @@ if(ENABLE_MPI)
 	#		ljmd_mpi_util_lib
 	#		ljmd_common_lib
 	#	)
-	#create_test_mpi(NAME mpi_io NPROCS 4 SRC mpi_io/test_mpi_io.cpp 
+	#create_test_mpi(NAME mpi_io NPROCS 4 SRC ${ljmd_SOURCE_FILES}/mpi/mpi_io/test_mpi_io.cpp 
 	#			COMMAND $<TARGET_FILE:test_mpi_io>  LIBS ${MPI_IO_TEST_LIBS}  )
 	#configure_file(${ljmd_SOURCE_DIR}/src/mpi/mpi_io/test_params.inp ${ljmd_SOURCE_DIR}/build/test_params.inp COPYONLY)
 	
@@ -144,8 +153,35 @@ if(ENABLE_MPI)
 			ljmd_mpi_util_lib
 			ljmd_mpi_comm_lib
 		)
-	create_test_mpi(NAME mpi_comm NPROCS 4 SRC mpi_comm/test_mpi_comm.cpp 
+	create_test_mpi(NAME mpi_comm NPROCS 4 SRC ${ljmd_SOURCE_FILES}/mpi/mpi_comm/test_mpi_comm.cpp 
 				COMMAND $<TARGET_FILE:test_mpi_comm>  LIBS ${MPI_COMM_TEST_LIBS}  )
+				
+	#MPI ekin test
+	set( MPI_EKT_TEST_LIBS 
+			ljmd_phys_lib
+			ljmd_common_lib
+		)
+	create_test_mpi(NAME ekin NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_ekin.cpp
+				COMMAND $<TARGET_FILE:test_ekin>  LIBS ${MPI_EKT_TEST_LIBS}  )
+	
+			
+	#MPI force test
+	set( MPI_FORCE_TEST_LIBS 
+			ljmd_phys_lib
+			ljmd_common_lib
+		)
+	create_test_mpi(NAME force NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_force.cpp
+				COMMAND $<TARGET_FILE:test_force>  LIBS ${MPI_FORCE_TEST_LIBS}  )
+		
+		
+	#MPI integration test
+	set( MPI_FORCE_TEST_LIBS 
+			ljmd_phys_lib
+			ljmd_common_lib
+		)
+	create_test_mpi(NAME verlet NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_integration.cpp
+				COMMAND $<TARGET_FILE:test_verlet>  LIBS ${MPI_FORCE_TEST_LIBS}  )
+				
 	
 endif()
 

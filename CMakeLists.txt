@@ -7,7 +7,7 @@ project(ljmd VERSION 1.1 LANGUAGES C)
 
 if(ENABLE_MPI)
 			find_package(MPI REQUIRED) 
-			set( tgt_name ljmd_mpi)
+			set( tgt_name mpi)
 			set( tgt_exe_name "ljmd-mpi.x")
 else()			
 			set( tgt_name serial)

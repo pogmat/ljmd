@@ -21,12 +21,22 @@ class Ekin_T_Test : public ::testing::Test {
                 sys->vy[1] = -1.0;
                 sys->vz[0] = 0.0;
                 sys->vz[1] = 0.0;
+#if defined(MPI_ENABLED)
+                arr_seg_t proc_seg;
+                sys->proc_seg = &proc_seg;
+                proc_seg.size = sys->natoms;
+                proc_seg.idx = 0;
+#endif
         }
 
         void TearDown() {
                 delete[] sys->vx;
                 delete[] sys->vy;
                 delete[] sys->vz;
+
+#if defined(MPI_ENABLED)
+                sys->proc_seg = nullptr;
+#endif
 
                 delete sys;
         }
@@ -36,10 +46,21 @@ TEST(Ekin_T_TestEmpty, empty) {
         mdsys_t *sys = new mdsys_t;
         sys->natoms = 0;
 
+#if defined(MPI_ENABLED)
+        arr_seg_t proc_seg;
+        sys->proc_seg = &proc_seg;
+        proc_seg.size = sys->natoms;
+        proc_seg.idx = 0;
+#endif
+
         ekin(sys);
 
         ASSERT_DOUBLE_EQ(sys->ekin, 0.0);
         ASSERT_DOUBLE_EQ(sys->temp, 0.0);
+
+#if defined(MPI_ENABLED)
+        sys->proc_seg = nullptr;
+#endif
 
         delete sys;
 }

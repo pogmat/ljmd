@@ -29,6 +29,7 @@ void force(mdsys_t *sys) {
         azzero(sys->fx, sys->proc_seg->size);
         azzero(sys->fy, sys->proc_seg->size);
         azzero(sys->fz, sys->proc_seg->size);
+
         for (i = sys->proc_seg->idx;
              i < (sys->proc_seg->idx + sys->proc_seg->size); ++i) {
 #else

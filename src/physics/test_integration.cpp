@@ -13,6 +13,11 @@ class IntegrationTest
                 sys->natoms = 2;
                 sys->mass = 1.0;
 
+#if defined(MPI_ENABLED)
+                arr_seg_t proc_seg;
+                sys->proc_seg = &proc_seg;
+#endif
+
                 sys->rx = new double[2]();
                 sys->ry = new double[2]();
                 sys->rz = new double[2]();
@@ -39,12 +44,21 @@ class IntegrationTest
                 delete[] sys->fy;
                 delete[] sys->fz;
 
+#if defined(MPI_ENABLED)
+                sys->proc_seg = nullptr;
+#endif
+
                 delete sys;
         }
 };
 
 TEST_P(IntegrationTest, testVerlet1) {
         ASSERT_NE(sys, nullptr);
+
+#if defined(MPI_ENABLED)
+        sys->proc_seg->size = 2;
+        sys->proc_seg->idx = 0;
+#endif
 
         sys->dt = std::get<0>(GetParam());
 
@@ -77,6 +91,11 @@ TEST_P(IntegrationTest, testVerlet1) {
 
 TEST_P(IntegrationTest, testVerlet2) {
         ASSERT_NE(sys, nullptr);
+
+#if defined(MPI_ENABLED)
+        sys->proc_seg->size = 2;
+        sys->proc_seg->idx = 0;
+#endif
 
         sys->dt = std::get<0>(GetParam());
 
