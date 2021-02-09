@@ -19,12 +19,19 @@ target_include_directories(test_common PRIVATE ${CMAKE_MODULE_PATH}/src)
 target_link_libraries(test_common PRIVATE GTest::GTestMain GTest::GTest ljmd_common_lib)
 add_test(NAME common COMMAND test_common )
   
-# io tests
+# input tests
 add_executable(test_input ${ljmd_SOURCE_FILES}/io/test_input.cpp)
 set_target_properties(test_input PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 target_include_directories(test_input PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/io ${ljmd_SOURCE_DIR}/src/common)
 target_link_libraries(test_input PRIVATE GTest::GTestMain GTest::GTest ljmd_io_lib)
 add_test(NAME input COMMAND test_input)
+
+# output tests
+add_executable(test_output ${ljmd_SOURCE_FILES}/io/test_output.cpp)
+set_target_properties(test_output PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_output PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/io)
+target_link_libraries(test_output PRIVATE GTest::GTestMain GTest::GTest ljmd_io_lib)
+add_test(NAME output COMMAND test_output)
 
 
 # utils tests
