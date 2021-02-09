@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 struct arr_seg {
-        int id;
         int idx;
         int size;
         int splitting[3];

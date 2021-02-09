@@ -61,7 +61,6 @@ TEST_F(test_init_segments, all) {
         for (int proc_id = 0; proc_id < nprocs; ++proc_id) {
                 init_segments(nprocs, proc_id, &proc_seg, size);
 
-                EXPECT_EQ(proc_seg.id, proc_id);
                 EXPECT_EQ(proc_seg.idx, idx_arr[proc_id]);
                 EXPECT_EQ(proc_seg.size, size_arr[proc_id]);
         }

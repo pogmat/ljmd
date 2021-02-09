@@ -2,6 +2,10 @@
 
 #include "physics.h"
 
+#if defined(MPI_ENABLED)
+#include "mpi_headers/mpi_utils.h"
+#endif
+
 /* helper function: apply minimum image convention */
 static double pbc(double x, const double boxby2) {
         while (x > boxby2)
@@ -19,11 +23,20 @@ void force(mdsys_t *sys) {
 
         /* zero energy and forces */
         sys->epot = 0.0;
+
+        int force_idx = 0;
+#if defined(MPI_ENABLED)
+        azzero(sys->fx, sys->proc_seg->size);
+        azzero(sys->fy, sys->proc_seg->size);
+        azzero(sys->fz, sys->proc_seg->size);
+        for (i = sys->proc_seg->idx;
+             i < (sys->proc_seg->idx + sys->proc_seg->size); ++i) {
+#else
         azzero(sys->fx, sys->natoms);
         azzero(sys->fy, sys->natoms);
         azzero(sys->fz, sys->natoms);
-
         for (i = 0; i < (sys->natoms); ++i) {
+#endif
                 for (j = 0; j < (sys->natoms); ++j) {
 
                         /* particles have no interactions with themselves */
@@ -46,10 +59,11 @@ void force(mdsys_t *sys) {
                                              (pow(sys->sigma / r, 12.0) -
                                               pow(sys->sigma / r, 6.0));
 
-                                sys->fx[i] += rx / r * ffac;
-                                sys->fy[i] += ry / r * ffac;
-                                sys->fz[i] += rz / r * ffac;
+                                sys->fx[force_idx] += rx / r * ffac;
+                                sys->fy[force_idx] += ry / r * ffac;
+                                sys->fz[force_idx] += rz / r * ffac;
                         }
                 }
+                ++force_idx;
         }
 }

@@ -1,13 +1,33 @@
-
+#include <stdlib.h>
 
 #include "io.h"
 #include "mpi_headers/mpi_utils.h"
 #include <mpi.h>
 
-void mpi_send_pos_vel(const int nprocs, const arr_seg_t *proc_seg, mdsys_t *sys,
-                      const double *restrict vxbuf,
-                      const double *restrict vybuf,
-                      const double *restrict vzbuf) {
+void mpi_send_pos_vel(mdsys_t *sys) {
+
+        /*	v{x,y,z}buf will act as the send buffer for velocities
+           distribution for proc 0 they will be swapped with the current
+           sys->v{x,y,z} array pointers and new smaller velocityes arrays
+           allocated
+        */
+
+        double *vxbuf = NULL;
+        double *vybuf = NULL;
+        double *vzbuf = NULL;
+
+        if (sys->proc_id == 0) {
+                vxbuf = sys->vx;
+                vybuf = sys->vy;
+                vzbuf = sys->vz;
+
+                sys->vx =
+                    (double *)malloc(sys->proc_seg->size * sizeof(double));
+                sys->vy =
+                    (double *)malloc(sys->proc_seg->size * sizeof(double));
+                sys->vz =
+                    (double *)malloc(sys->proc_seg->size * sizeof(double));
+        }
 
         /* 	initialise arrays for MPI Scatterv
                 count contains the number of elements per segment scattered
@@ -15,40 +35,45 @@ void mpi_send_pos_vel(const int nprocs, const arr_seg_t *proc_seg, mdsys_t *sys,
            buffer
         */
 
-        int count[nprocs];
-        int offsets[nprocs];
+        int count[sys->nprocs];
+        int offsets[sys->nprocs];
 
-        mpi_collective_comm_arrays(nprocs, proc_seg->splitting, count, offsets);
+        mpi_collective_comm_arrays(sys->nprocs, sys->proc_seg->splitting, count,
+                                   offsets);
 
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Request rxreq, ryreq, rzreq, vxreq, vyreq, vzreq;
 
         /*scatter all the positions */
-
-        MPI_Iscatterv(sys->rx, count, offsets, MPI_DOUBLE,
-                      &sys->rx[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &rxreq);
-        MPI_Iscatterv(sys->ry, count, offsets, MPI_DOUBLE,
-                      &sys->ry[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &ryreq);
-        MPI_Iscatterv(sys->rz, count, offsets, MPI_DOUBLE,
-                      &sys->rz[proc_seg->idx], proc_seg->size, MPI_DOUBLE, 0,
-                      MPI_COMM_WORLD, &rzreq);
-
-        /* scatter all the velocites*/
-        MPI_Iscatterv(vxbuf, count, offsets, MPI_DOUBLE, sys->vx,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vxreq);
-        MPI_Iscatterv(vybuf, count, offsets, MPI_DOUBLE, sys->vy,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vyreq);
-        MPI_Iscatterv(vzbuf, count, offsets, MPI_DOUBLE, sys->vz,
-                      proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD, &vzreq);
+        MPI_Ibcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &rxreq);
+        MPI_Ibcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &ryreq);
+        MPI_Ibcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD, &rzreq);
 
         MPI_Wait(&rxreq, MPI_STATUS_IGNORE);
         MPI_Wait(&ryreq, MPI_STATUS_IGNORE);
         MPI_Wait(&rzreq, MPI_STATUS_IGNORE);
+
+        /* scatter all the velocites*/
+
+        MPI_Iscatterv(vxbuf, count, offsets, MPI_DOUBLE, sys->vx,
+                      sys->proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD,
+                      &vxreq);
+        MPI_Iscatterv(vybuf, count, offsets, MPI_DOUBLE, sys->vy,
+                      sys->proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD,
+                      &vyreq);
+        MPI_Iscatterv(vzbuf, count, offsets, MPI_DOUBLE, sys->vz,
+                      sys->proc_seg->size, MPI_DOUBLE, 0, MPI_COMM_WORLD,
+                      &vzreq);
+
         MPI_Wait(&vxreq, MPI_STATUS_IGNORE);
         MPI_Wait(&vyreq, MPI_STATUS_IGNORE);
         MPI_Wait(&vzreq, MPI_STATUS_IGNORE);
+
+        if (sys->proc_id == 0) {
+                free(vxbuf);
+                free(vybuf);
+                free(vzbuf);
+        }
 }
 
 void mpi_exchange_positions(mdsys_t *sys, const int *count,

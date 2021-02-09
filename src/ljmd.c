@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 // custom header files
@@ -15,8 +16,6 @@
 
 #if defined(MPI_ENABLED)
 #include "mpi_headers/mpi_comm.h"
-#include "mpi_headers/mpi_io.h"
-#include "mpi_headers/mpi_physics.h"
 #include "mpi_headers/mpi_utils.h"
 #include <mpi.h>
 #endif
@@ -40,6 +39,10 @@ int main(int argc, char **argv) {
 
         arr_seg_t proc_seg;
 
+        sys.nprocs = nprocs;
+        sys.proc_id = proc_id;
+        sys.proc_seg = &proc_seg;
+
 #endif
 
 #if defined(MPI_ENABLED)
@@ -52,61 +55,51 @@ int main(int argc, char **argv) {
 
         t_start = wallclock();
 
-#if defined(MPI_ENABLED)
-        char init_err = mpi_initialise(nprocs, proc_id, &proc_seg, &sys, stdin,
-                                       &fnames, &nprint);
-
-#else
         char init_err = initialise(&sys, stdin, &fnames, &nprint);
-#endif
         if (init_err) {
                 return init_err;
         }
 
 #if defined(MPI_ENABLED)
-        /*
-for (int i = 0; i < nprocs; ++i) {
-        if (proc_id == i) {
-                for (int j = proc_seg.idx;
-                     j < (proc_seg.idx + proc_seg.size); ++j) {
+
+/*
+        if (proc_id == 0) {
+                for (int j = 0;  j < (sys.natoms); ++j) {
                         printf("%d  %20.8f %20.8f %20.8f\n", j + 1,
                                sys.rx[j], sys.ry[j], sys.rz[j]);
                 }
         }
-        sleep(0.1);
-        MPI_Barrier(MPI_COMM_WORLD);
-}
+
+MPI_Barrier(MPI_COMM_WORLD);
+
 for (int i = 0; i < nprocs; ++i) {
         if (proc_id == i) {
-                for (int j = 0; j < (proc_seg.size); ++j) {
+                for (int j = 0; j < (sys.proc_seg->size); ++j) {
                         printf("%d  %20.8f %20.8f %20.8f\n",
-                               j + proc_seg.idx + 1, sys.vx[j],
+                               j + sys.proc_seg->idx + 1, sys.vx[j],
                                sys.vy[j], sys.vz[j]);
                 }
         }
         sleep(0.1);
         MPI_Barrier(MPI_COMM_WORLD);
 }
-        */
+ */
 #endif
 
 #if defined(MPI_ENABLED)
         int count[nprocs];
         int offsets[nprocs];
-        mpi_collective_comm_arrays(nprocs, proc_seg.splitting, count, offsets);
-        mpi_exchange_positions(&sys, count, offsets);
+        mpi_collective_comm_arrays(nprocs, sys.proc_seg->splitting, count,
+                                   offsets);
 #endif
 
         /* initialize forces and energies.*/
         sys.nfi = 0;
 
-#if defined(MPI_ENABLED)
-        mpi_force(&proc_seg, &sys);
-        mpi_ekin(&proc_seg, &sys);
-        mpi_reduce_UKT(&sys);
-#else
         force(&sys);
         ekin(&sys);
+#if defined(MPI_ENABLED)
+        mpi_reduce_UKT(&sys);
 #endif
 
 #if defined(MPI_ENABLED)
@@ -128,7 +121,7 @@ for (int i = 0; i < nprocs; ++i) {
         }
 #endif
         /*
-        #if defined(MPI_ENABLED)
+         #if defined(MPI_ENABLED)
                 cleanup_mdsys(&sys);
                 MPI_Finalize();
                 return 0;
@@ -136,7 +129,8 @@ for (int i = 0; i < nprocs; ++i) {
                 cleanup_mdsys(&sys);
                 return 0;
         #endif
-        */
+*/
+
         /* reset timer */
         t_start = wallclock();
 
@@ -156,21 +150,15 @@ for (int i = 0; i < nprocs; ++i) {
 
                 /* propagate system and recompute energies */
                 /* use the split versin of Verlet algorithm*/
-
-#if defined(MPI_ENABLED)
-                mpi_verlet_1(&proc_seg, &sys);
-                mpi_exchange_positions(&sys, count, offsets);
-                mpi_force(&proc_seg, &sys);
-                mpi_verlet_2(&proc_seg, &sys);
-
-                mpi_ekin(&proc_seg, &sys);
-                mpi_reduce_UKT(&sys);
-#else
                 verlet_1(&sys);
+#if defined(MPI_ENABLED)
+                mpi_exchange_positions(&sys, count, offsets);
+#endif
                 force(&sys);
                 verlet_2(&sys);
-
                 ekin(&sys);
+#if defined(MPI_ENABLED)
+                mpi_reduce_UKT(&sys);
 #endif
         }
         /**************************************************/

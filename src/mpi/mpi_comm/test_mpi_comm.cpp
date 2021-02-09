@@ -13,10 +13,6 @@ class MPI_send_pos_vel_test : public ::testing::Test {
         int proc_id;
         mdsys_t *sys;
 
-        double *vxbuf;
-        double *vybuf;
-        double *vzbuf;
-
         void SetUp() {
                 nprocs = MPITestEnv::get_mpi_procs();
                 ASSERT_EQ(nprocs, 4);
@@ -24,10 +20,11 @@ class MPI_send_pos_vel_test : public ::testing::Test {
                 proc_id = MPITestEnv::get_mpi_rank();
                 sys = new mdsys_t;
                 sys->natoms = 4;
+                sys->nprocs = nprocs;
+                sys->proc_id = proc_id;
 
-                sys->vx = new double[1]();
-                sys->vy = new double[1]();
-                sys->vz = new double[1]();
+                arr_seg_t proc_seg;
+                sys->proc_seg = &proc_seg;
 
                 if (proc_id == 0) {
 
@@ -35,18 +32,18 @@ class MPI_send_pos_vel_test : public ::testing::Test {
                         sys->ry = new double[4]{0, 10, 20, 30};
                         sys->rz = new double[4]{0, 10, 20, 30};
 
-                        vxbuf = new double[4]{0, 1, 2, 3};
-                        vybuf = new double[4]{0, 1, 2, 3};
-                        vzbuf = new double[4]{0, 1, 2, 3};
+                        sys->vx = new double[4]{0, 1, 2, 3};
+                        sys->vy = new double[4]{0, 1, 2, 3};
+                        sys->vz = new double[4]{0, 1, 2, 3};
                 } else {
 
                         sys->rx = new double[4];
                         sys->ry = new double[4];
                         sys->rz = new double[4];
 
-                        vxbuf = nullptr;
-                        vybuf = nullptr;
-                        vzbuf = nullptr;
+                        sys->vx = new double[1]();
+                        sys->vy = new double[1]();
+                        sys->vz = new double[1]();
                 }
         }
 
@@ -59,27 +56,21 @@ class MPI_send_pos_vel_test : public ::testing::Test {
                 delete[] sys->vy;
                 delete[] sys->vz;
 
-                if (proc_id == 0) {
-                        delete[] vxbuf;
-                        delete[] vybuf;
-                        delete[] vzbuf;
-                }
-
                 delete sys;
         }
 };
 
 TEST_F(MPI_send_pos_vel_test, rbip) {
 
-        arr_seg_t proc_seg;
+        init_segments(nprocs, proc_id, sys->proc_seg, sys->natoms);
 
-        init_segments(nprocs, proc_id, &proc_seg, sys->natoms);
+        mpi_send_pos_vel(sys);
 
-        mpi_send_pos_vel(nprocs, &proc_seg, sys, vxbuf, vybuf, vzbuf);
-
-        EXPECT_DOUBLE_EQ(sys->rx[proc_id], 10 * proc_id);
-        EXPECT_DOUBLE_EQ(sys->ry[proc_id], 10 * proc_id);
-        EXPECT_DOUBLE_EQ(sys->rz[proc_id], 10 * proc_id);
+        for (int p = 0; p < nprocs; ++p) {
+                EXPECT_DOUBLE_EQ(sys->rx[p], 10 * p);
+                EXPECT_DOUBLE_EQ(sys->ry[p], 10 * p);
+                EXPECT_DOUBLE_EQ(sys->rz[p], 10 * p);
+        }
 
         EXPECT_DOUBLE_EQ(sys->vx[0], proc_id);
         EXPECT_DOUBLE_EQ(sys->vy[0], proc_id);

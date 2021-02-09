@@ -1,6 +1,5 @@
-#include <stdio.h>
-//#include <mpi.h>
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "mpi_headers/mpi_utils.h"
@@ -46,7 +45,6 @@ void init_segments(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
                                 (proc_id - splitting[0]) * splitting[2];
                 proc_seg->size = splitting[2];
         }
-        proc_seg->id = proc_id;
         memcpy(proc_seg->splitting, splitting, 3 * sizeof(int));
 }
 
