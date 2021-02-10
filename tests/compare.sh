@@ -41,7 +41,7 @@ if [ "$SWITCH" = "mpi" ]; then
 		done
 elif [ -z ${SWITCH} ]; then
 		echo "serial test"
-		run_test "${INPUT_DIR} ${BINARY}"
+		run_test "${INPUT_DIR}" "${BINARY}"
 fi
 
 
