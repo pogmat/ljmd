@@ -120,9 +120,6 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
         }
 
         init_segments(sys->nprocs, sys->proc_id, sys->proc_seg, sys->natoms);
-        printf("%d\n", sys->natoms);
-        printf("%f\n", sys->rcut);
-        printf("%d\n", sys->proc_seg->size);
 
 #endif
 
@@ -138,19 +135,18 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
         sys->fy = (double *)malloc(sys->natoms * sizeof(double));
         sys->fz = (double *)malloc(sys->natoms * sizeof(double));
 #else
-        int seg_size = sys->proc_seg->size;
-        sys->fx = (double *)malloc(seg_size * sizeof(double));
-        sys->fy = (double *)malloc(seg_size * sizeof(double));
-        sys->fz = (double *)malloc(seg_size * sizeof(double));
-        if (sys->proc_id > 0) {
-                sys->vx = (double *)malloc(seg_size * sizeof(double));
-                sys->vy = (double *)malloc(seg_size * sizeof(double));
-                sys->vz = (double *)malloc(seg_size * sizeof(double));
-
+        sys->fx = (double *)malloc(sys->natoms * sizeof(double));
+        sys->fy = (double *)malloc(sys->natoms * sizeof(double));
+        sys->fz = (double *)malloc(sys->natoms * sizeof(double));
+        if (sys->proc_id != 0) {
+                sys->vx = (double *)malloc(1 );
+                sys->vy = (double *)malloc(1 );
+                sys->vz = (double *)malloc(1 );
         } else {
                 sys->vx = (double *)malloc(sys->natoms * sizeof(double));
                 sys->vy = (double *)malloc(sys->natoms * sizeof(double));
                 sys->vz = (double *)malloc(sys->natoms * sizeof(double));
+
 #endif
 
         /* read restart */
@@ -165,9 +161,6 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
                                sys->vz + i);
                 }
                 fclose(fp);
-                // azzero(sys->fx, sys->natoms);
-                // azzero(sys->fy, sys->natoms);
-                // azzero(sys->fz, sys->natoms);
         } else {
                 perror("cannot read restart file");
                 return 3;
@@ -175,9 +168,6 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
 
 #if defined(MPI_ENABLED)
 }
-
-// MPI_Barrier(MPI_COMM_WORLD);
-mpi_send_pos_vel(sys);
 
 #endif
 
