@@ -21,7 +21,8 @@ void mpi_broadcast_pos(mdsys_t *sys) {
 
 void mpi_reduce_forces(mdsys_t *sys, const int *count, const int *offsets) {
 
-		/* reduction in place, two different signatures for master and children */
+        /* reduction in place, two different signatures for master and children
+         */
         if (sys->proc_id == 0) {
                 MPI_Reduce(MPI_IN_PLACE, sys->fx, sys->natoms, MPI_DOUBLE,
                            MPI_SUM, 0, MPI_COMM_WORLD);

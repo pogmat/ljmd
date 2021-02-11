@@ -39,13 +39,12 @@ int main(int argc, char **argv) {
         MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
         MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
 
-        mpi_hello(proc_id);
-
         arr_seg_t proc_seg;
 
         sys.nprocs = nprocs;
         sys.proc_id = proc_id;
         sys.proc_seg = &proc_seg;
+        sys.proc_seg->splitting = (int *)malloc(nprocs * sizeof(int));
 
 #endif
 
@@ -217,6 +216,7 @@ for (int i = 0; i < nprocs; ++i) {
 #if defined(MPI_ENABLED)
                 }
 #endif
+                sleep(0.5);
         }
         /**************************************************/
 
@@ -259,7 +259,8 @@ for (int i = 0; i < nprocs; ++i) {
                 printf("Data read time 		: %10.8fs.\n", io_t);
                 printf("Avg Force calc time 	: %10.8fs.\n", avg_time_arr[1]);
                 printf("Avg Verlet calc time 	: %10.8fs.\n", time_arr[2]);
-                printf("Avg Ekin calc time 		: %10.8fs.\n", time_arr[3]);
+                printf("Avg Ekin calc time 		: %10.8fs.\n",
+                       time_arr[3]);
                 printf("Avg total time 		: %10.8fs.\n", avg_time_arr[0]);
         }
 #else

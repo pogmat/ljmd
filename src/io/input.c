@@ -139,9 +139,9 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
         sys->fy = (double *)malloc(sys->natoms * sizeof(double));
         sys->fz = (double *)malloc(sys->natoms * sizeof(double));
         if (sys->proc_id != 0) {
-                sys->vx = (double *)malloc(1 );
-                sys->vy = (double *)malloc(1 );
-                sys->vz = (double *)malloc(1 );
+                sys->vx = (double *)malloc(1);
+                sys->vy = (double *)malloc(1);
+                sys->vz = (double *)malloc(1);
         } else {
                 sys->vx = (double *)malloc(sys->natoms * sizeof(double));
                 sys->vy = (double *)malloc(sys->natoms * sizeof(double));
