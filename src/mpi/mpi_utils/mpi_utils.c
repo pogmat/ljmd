@@ -57,18 +57,16 @@ int max_min_index(int *arr, int length, int swch) {
    area momentarily, the slices are calculated from bottom to top first
    calculate the "b segments" as the vertical length from the bottom right
    corner and the top of the k-th slice, they define sub-triangles
+   for instance an 8x8 upper triangle sliced in 3, sohwn is "b segment 1" :
 
-                        for instance an 8x8 upper triangle sliced in 3, sohwn is
-   "b segment 1"
-
-                        o o o o o o o o
-                          o o o o o o o _
-                            x x x x x x |
-                                  x x x x x |
-                                    # # # # |
-                                          # # # |
-                                            # # |
-                                                  # |
+                  o o o o o o o o
+                    o o o o o o o _
+                      x x x x x x |
+                        x x x x x |
+                          # # # # |
+                            # # # |
+                              # # |
+                                # |
 
                         calculate the triangle segments using three discrete
    approx methods calculate the areas of the resulting slice as well, not the
