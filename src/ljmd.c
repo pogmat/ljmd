@@ -94,6 +94,10 @@ for (int i = 0; i < nprocs; ++i) {
         MPI_Barrier(MPI_COMM_WORLD);
 }
  */
+	
+
+	
+	
 #endif
 
 #if defined(MPI_ENABLED)
@@ -102,6 +106,7 @@ for (int i = 0; i < nprocs; ++i) {
         mpi_collective_comm_arrays(nprocs, sys.proc_seg->splitting, count,
                                    offsets);
 #endif
+	
 
         /* initialize forces and energies.*/
         sys.nfi = 0;
@@ -236,9 +241,10 @@ for (int i = 0; i < nprocs; ++i) {
         */
 
 #if defined(TIMING)
+		int t;
         double time_arr[] = {wallclock() - t_start, force_t, verlet_t, e_kin_t};
 
-        for (int t = 1; t < 4; ++t) {
+        for (t = 1; t < 4; ++t) {
                 time_arr[t] /= sys.nsteps;
         }
 
@@ -248,8 +254,8 @@ for (int i = 0; i < nprocs; ++i) {
                    MPI_COMM_WORLD);
 
         if (proc_id == 0) {
-                for (int pr = 0; pr < 2; ++pr) {
-                        avg_time_arr[pr] /= nprocs;
+                for (t = 0; t < 2; ++t) {
+                        avg_time_arr[t] /= nprocs;
                 }
 #endif
 
