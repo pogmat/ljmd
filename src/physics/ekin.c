@@ -1,10 +1,11 @@
 #include "physics.h"
+#include <stdio.h>
 
 /* compute kinetic energy */
 void ekin(mdsys_t *sys) {
         int i;
-
         sys->ekin = 0.0;
+
         for (i = 0; i < sys->natoms; ++i) {
                 sys->ekin +=
                     0.5 * mvsq2e * sys->mass *
