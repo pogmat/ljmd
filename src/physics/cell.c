@@ -5,7 +5,13 @@
 /* (3^3 - 1) / 2 */
 #define HALFNEIGH 14
 
-static int pair_number(int ncs) {
+/* helper function that determines the number of pairs
+ * given a the number fo cells per side.
+ * If there are 1 or 2 cell per side every pairs of cells
+ * must be considered.
+ * If there are 3 or more cells it the fan algorithm applies.
+ */
+static inline int pair_number(int ncs) {
 	switch (ncs) {
 	case 1:
 		return 1;
@@ -16,6 +22,7 @@ static int pair_number(int ncs) {
 	}
 }
 
+/* helper function that build the list of interacting cells */
 static void build_pairs(mdsys_t *sys) {
 	/* Toric fan generating the positive cone */
 	int fan[HALFNEIGH][3] = {{ 0,  0,  0},
@@ -34,13 +41,14 @@ static void build_pairs(mdsys_t *sys) {
 				 { 1,  1, -1}};
 
 	
-
+	/* only one cell per side: the pairs list is trivial */
 	int ncellside = sys->ncellside;
 	if (ncellside == 1) {
 		sys->cellpairs[0] = 0;
 		sys->cellpairs[1] = 0;
 		return;
-	} 
+	}
+	/* two cells per side: every cell is close to another */
 	if (ncellside == 2) {
 		for (int l = 0, p = 0; l < 8; ++l)
 			for (int ll = l; ll < 8; ++ll) {
@@ -49,7 +57,7 @@ static void build_pairs(mdsys_t *sys) {
 			}
 		return;
 	}
-	
+	/* more than three cells: the fan algorithm applies */
 	int i, j, k, ii, jj, kk, ll;	
 	int *pairptr = sys->cellpairs;
 	for (int l = 0; l < ncellside * ncellside * ncellside; ++l) {
@@ -64,11 +72,10 @@ static void build_pairs(mdsys_t *sys) {
 			*(pairptr++) = l;
 			*(pairptr++) = ll;
 		}
-	}
-	
+	}	
 }
 
-
+/* this function build the cells */
 void build_cells(mdsys_t *sys) {
 	const double tolerance = 1.01;
 	
@@ -79,4 +86,10 @@ void build_cells(mdsys_t *sys) {
 	sys->cells = (cell_t*)malloc(ncells * sizeof(cell_t));
 	sys->cellpairs = (int*)malloc(2 * npairs * sizeof(int));
 	build_pairs(sys);
+}
+
+/* helper function that determines in which cell an atom belogs to */
+inline int which_cell(double x, const mdsys_t *sys) {
+	double boxby2 = 0.5 * sys->box;
+	return (int)((pbc(x, 0.5 * boxby2) + boxby2) / sys->cellsize);
 }

@@ -1,10 +1,5 @@
 #include "gtest/gtest.h"
-
-/* inclusion of source file is needed
- * since we want to test a static function  */
-extern "C" {
-		#include "force.c"
-}
+#include "physics.h"
 
 TEST(pbc_test, inside) {
         ASSERT_DOUBLE_EQ(pbc(3.0, 10.0 * 0.5), 3.0);

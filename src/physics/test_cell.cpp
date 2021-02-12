@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -20,21 +19,6 @@ static int pbc_int(int x, int size) {
 	return x;
 }
 
-/* TODO: test build_paires for the following situation
- *
- * 00 01 02
- * 03 04 05
- * 05 07 08
- *
- * 09 10 11
- * 12 13 14
- * 15 16 17
- *
- * 18 19 20
- * 21 22 23
- * 24 25 26
- */
-
 class build_pairs_test: public ::testing::TestWithParam<int> {
 
 protected:
@@ -46,12 +30,33 @@ protected:
 	virtual void SetUp() override
 		{
 			sys.ncellside = size;
-			sys.cellpairs = new int[2 * HALFNEIGH * size3];
+			sys.cellpairs = new int[2 * pair_number(size)];
 		}
 
 	virtual void TearDown() override
 		{
 			delete[] sys.cellpairs;
+		}
+};
+
+class which_cell_test: public ::testing::TestWithParam<std::pair<double, double>> {
+
+protected:
+	
+	double box = GetParam().first;
+	double cellsize = GetParam().second;
+	mdsys_t* sys;
+
+	virtual void SetUp() override
+		{
+		        sys = new mdsys_t;
+			sys->box = box;
+			sys->cellsize = cellsize;
+		}
+
+	virtual void TearDown() override
+		{
+			delete sys;
 		}
 };
 

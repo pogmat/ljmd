@@ -34,10 +34,12 @@ struct _mdsys {
 };
 typedef struct _mdsys mdsys_t;
 
-extern void build_cells(mdsys_t *);
+extern void build_cells(mdsys_t *sys);
 extern void cleanup_mdsys(mdsys_t *sys);
 extern void ekin(mdsys_t *sys);
 extern void force(mdsys_t *sys);
+extern double pbc(double x, const double boxby2);
+extern int which_cell(double x, const mdsys_t *sys);
 extern void verlet_1(mdsys_t *sys);
 extern void verlet_2(mdsys_t *sys);
 
