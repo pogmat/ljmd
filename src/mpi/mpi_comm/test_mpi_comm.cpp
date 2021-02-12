@@ -6,7 +6,7 @@
 #include "mpi_headers/mpi_comm.h"
 #include "mpi_headers/mpi_test_env.h"
 #include "mpi_headers/mpi_utils.h"
-
+/*
 class MPI_send_pos_vel_test : public ::testing::Test {
       protected:
         int nprocs;
@@ -158,6 +158,108 @@ TEST_F(MPI_red_UKT, basic) {
                 EXPECT_DOUBLE_EQ(sys->temp, 10.0 * nprocs);
                 EXPECT_DOUBLE_EQ(sys->epot, 2.0 * nprocs);
         }
+}
+
+*/
+
+class MPI_broadc_pos_test : public ::testing::Test {
+      protected:
+        int nprocs;
+        int proc_id;
+        mdsys_t *sys;
+
+        void SetUp() {
+                nprocs = MPITestEnv::get_mpi_procs();
+                ASSERT_EQ(nprocs, 4);
+
+                proc_id = MPITestEnv::get_mpi_rank();
+                sys = new mdsys_t;
+                sys->natoms = 4;
+                sys->nprocs = nprocs;
+                sys->proc_id = proc_id;
+
+                if (proc_id == 0) {
+
+                        sys->rx = new double[4]{0, 10, 20, 30};
+                        sys->ry = new double[4]{0, 10, 20, 30};
+                        sys->rz = new double[4]{0, 10, 20, 30};
+
+                } else {
+
+                        sys->rx = new double[4];
+                        sys->ry = new double[4];
+                        sys->rz = new double[4];
+                }
+        }
+
+        void TearDown() {
+                delete[] sys->rx;
+                delete[] sys->ry;
+                delete[] sys->rz;
+
+                delete sys;
+        }
+};
+
+TEST_F(MPI_broadc_pos_test, simple) {
+
+        mpi_broadcast_pos(sys);
+
+        for (int p = 0; p < sys->natoms; ++p) {
+                EXPECT_DOUBLE_EQ(sys->rx[p], 10 * p);
+                EXPECT_DOUBLE_EQ(sys->ry[p], 10 * p);
+                EXPECT_DOUBLE_EQ(sys->rz[p], 10 * p);
+        }
+}
+
+class MPI_reduce_forces_u_test : public ::testing::Test {
+      protected:
+        int nprocs;
+        int proc_id;
+        mdsys_t *sys;
+
+        void SetUp() {
+                nprocs = MPITestEnv::get_mpi_procs();
+                ASSERT_EQ(nprocs, 4);
+
+                proc_id = MPITestEnv::get_mpi_rank();
+                sys = new mdsys_t;
+                sys->natoms = 4;
+                sys->nprocs = nprocs;
+                sys->proc_id = proc_id;
+
+                sys->fx = new double[4]();
+                sys->fy = new double[4]();
+                sys->fz = new double[4]();
+
+                sys->fx[proc_id] = proc_id;
+                sys->fy[proc_id] = proc_id;
+                sys->fz[proc_id] = proc_id;
+
+                sys->epot = 10.0;
+        }
+
+        void TearDown() {
+                delete[] sys->fx;
+                delete[] sys->fy;
+                delete[] sys->fz;
+
+                delete sys;
+        }
+};
+
+TEST_F(MPI_reduce_forces_u_test, basic) {
+
+        mpi_reduce_forces(sys);
+
+        if (proc_id == 0) {
+                for (int p = 0; p < sys->natoms; ++p) {
+                        EXPECT_DOUBLE_EQ(sys->fx[p], p);
+                        EXPECT_DOUBLE_EQ(sys->fy[p], p);
+                        EXPECT_DOUBLE_EQ(sys->fz[p], p);
+                }
+        }
+        EXPECT_DOUBLE_EQ(sys->epot, 10.0 * nprocs);
 }
 
 int main(int argc, char **argv) {

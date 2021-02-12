@@ -24,10 +24,6 @@ extern void split_triangle_equal_areas(int size, int nprocs, int *segment,
 extern void init_segments(const int nprocs, const int proc_id,
                           arr_seg_t *proc_seg, const int size);
 
-extern void mpi_collective_comm_arrays(const int nprocs,
-                                       const int *const splitting, int *count,
-                                       int *offset);
-
 #ifdef __cplusplus
 }
 #endif

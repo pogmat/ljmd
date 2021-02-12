@@ -4,7 +4,7 @@
 
 /* first part: propagate velocities by half and positions by full step  */
 void verlet_1(mdsys_t *sys) {
-		int i;
+        int i;
         for (i = 0; i < sys->natoms; ++i) {
                 sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
                 sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;
@@ -17,7 +17,7 @@ void verlet_1(mdsys_t *sys) {
 
 /* second part: propagate velocities by another half step */
 void verlet_2(mdsys_t *sys) {
-		int i;
+        int i;
         for (i = 0; i < sys->natoms; ++i) {
                 sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
                 sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;

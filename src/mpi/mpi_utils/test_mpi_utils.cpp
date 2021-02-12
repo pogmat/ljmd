@@ -2,105 +2,6 @@
 #include <math.h>
 
 #include "mpi_headers/mpi_utils.h"
-/*
-class test_split_dimension : public ::testing::TestWithParam<int> {
-
-      protected:
-        int size, nprocs;
-        int splitting[3];
-
-        virtual void SetUp() override {
-                size = 1000;
-                nprocs = GetParam();
-                ASSERT_TRUE(nprocs > 0);
-        }
-
-        virtual void TearDown() override {}
-};
-
-TEST_P(test_split_dimension, all) {
-        split_dimension(nprocs, size, splitting);
-
-        float base = ((float)size) / ((float)nprocs);
-        int h1 = (int)ceil(base);
-        int h2 = (int)floor(base);
-
-        ASSERT_TRUE((splitting[0] > 0));
-        EXPECT_TRUE((splitting[0] <= nprocs));
-
-        EXPECT_TRUE((splitting[1] - splitting[2]) >= 0);
-        EXPECT_TRUE((splitting[1] - splitting[2]) <= 1);
-
-        EXPECT_EQ(splitting[0] * splitting[1] +
-                      (nprocs - splitting[0]) * splitting[2],
-                  size);
-}
-
-INSTANTIATE_TEST_SUITE_P(test_split_dimension_p, test_split_dimension,
-                         ::testing::Values(1, 4, 10));
-
-class test_init_segments : public ::testing::Test {
-
-      protected:
-        int size, nprocs;
-        arr_seg_t proc_seg;
-
-        virtual void SetUp() override {
-                size = 998;
-                nprocs = 4;
-        }
-
-        virtual void TearDown() override {}
-};
-
-TEST_F(test_init_segments, all) {
-
-        int idx_arr[4]{0, 250, 500, 749};
-        int size_arr[4]{250, 250, 249, 249};
-
-        for (int proc_id = 0; proc_id < nprocs; ++proc_id) {
-                init_segments(nprocs, proc_id, &proc_seg, size);
-
-                EXPECT_EQ(proc_seg.idx, idx_arr[proc_id]);
-                EXPECT_EQ(proc_seg.size, size_arr[proc_id]);
-        }
-}
-
-
-
-
-
-class test_comm_arrays : public ::testing::Test {
-
-      protected:
-        int nprocs;
-        int *splitting;
-
-        virtual void SetUp() override {
-                nprocs = 4;
-                splitting = new int[3]{2, 250, 249};
-        }
-
-        virtual void TearDown() override { delete[] splitting; }
-};
-
-TEST_F(test_comm_arrays, all) {
-
-        int count[nprocs];
-        int offsets[nprocs];
-
-        int idx_arr[4]{0, 250, 500, 749};
-        int size_arr[4]{250, 250, 249, 249};
-
-        mpi_collective_comm_arrays(nprocs, splitting, count, offsets);
-
-        for (int proc_id = 0; proc_id < nprocs; ++proc_id) {
-                EXPECT_EQ(count[proc_id], size_arr[proc_id]);
-                EXPECT_EQ(offsets[proc_id], idx_arr[proc_id]);
-        }
-}
-
-*/
 
 TEST(right_triag_area_test, max_position) {
 
@@ -200,8 +101,7 @@ class segments_test : public ::testing::TestWithParam<int> {
         int proc_id = GetParam();
 
         void SetUp() {
-                nprocs = 3;
-                size = 8;
+                nprocs = 4;
                 proc_seg = new arr_seg_t;
                 proc_seg->splitting = new int[nprocs]();
         }
@@ -213,21 +113,24 @@ class segments_test : public ::testing::TestWithParam<int> {
         }
 };
 
-TEST_P(segments_test, init) {
+TEST_P(segments_test, small) {
 
-        ASSERT_EQ(nprocs, 3);
-        ASSERT_EQ(size, 8);
+        ASSERT_EQ(nprocs, 4);
         ASSERT_TRUE(proc_id >= 0);
         ASSERT_TRUE(proc_id < nprocs);
         ASSERT_TRUE(proc_seg);
         ASSERT_TRUE(proc_seg);
+
+        size = 8;
+
         ASSERT_TRUE(proc_seg->splitting);
 
         init_segments(nprocs, proc_id, proc_seg, size);
 
-        EXPECT_EQ(proc_seg->splitting[0], 2);
-        EXPECT_EQ(proc_seg->splitting[1], 2);
-        EXPECT_EQ(proc_seg->splitting[2], 4);
+        EXPECT_EQ(proc_seg->splitting[0], 1);
+        EXPECT_EQ(proc_seg->splitting[1], 1);
+        EXPECT_EQ(proc_seg->splitting[2], 2);
+        EXPECT_EQ(proc_seg->splitting[3], 4);
 
         EXPECT_EQ(proc_seg->size, proc_seg->splitting[proc_id]);
 
@@ -238,6 +141,35 @@ TEST_P(segments_test, init) {
         EXPECT_EQ(proc_seg->idx, exp_idx);
 }
 
+TEST_P(segments_test, large) {
+
+        ASSERT_EQ(nprocs, 4);
+        ASSERT_TRUE(proc_id >= 0);
+        ASSERT_TRUE(proc_id < nprocs);
+        ASSERT_TRUE(proc_seg);
+        ASSERT_TRUE(proc_seg);
+
+        size = 2916;
+
+        ASSERT_TRUE(proc_seg->splitting);
+
+        init_segments(nprocs, proc_id, proc_seg, size);
+
+        EXPECT_EQ(proc_seg->splitting[0], 391);
+        EXPECT_EQ(proc_seg->splitting[1], 463);
+        EXPECT_EQ(proc_seg->splitting[2], 604);
+        EXPECT_EQ(proc_seg->splitting[3], 1458);
+
+        EXPECT_EQ(proc_seg->size, proc_seg->splitting[proc_id]);
+
+        int exp_idx = 0;
+        for (int p = 0; p < proc_id; ++p) {
+                exp_idx += proc_seg->splitting[p];
+        }
+        EXPECT_EQ(proc_seg->idx, exp_idx);
+}
+
+/*
 TEST_P(segments_test, comm_arrays) {
 
         ASSERT_EQ(nprocs, 3);
@@ -263,6 +195,7 @@ TEST_P(segments_test, comm_arrays) {
         EXPECT_EQ(offsets[1], 2);
         EXPECT_EQ(offsets[2], 4);
 }
+*/
 
 INSTANTIATE_TEST_SUITE_P(segments_test_parametric, segments_test,
-                         ::testing::Values(0, 1, 2));
+                         ::testing::Values(0, 1, 2, 3));

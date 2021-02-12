@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 #if defined(TIMING)
         tmp_t = t_start;
 #endif
-
+        /* serial IO */
         char init_err = initialise(&sys, stdin, &fnames, &nprint);
         if (init_err) {
                 return init_err;
@@ -70,43 +70,6 @@ int main(int argc, char **argv) {
         io_t += wallclock() - tmp_t;
 #endif
 
-#if defined(MPI_ENABLED)
-/*
-
-        if (proc_id == 0) {
-                for (int j = 0;  j < (sys.natoms); ++j) {
-                        printf("%d  %20.8f %20.8f %20.8f\n", j + 1,
-                               sys.rx[j], sys.ry[j], sys.rz[j]);
-                }
-        }
-
-MPI_Barrier(MPI_COMM_WORLD);
-
-for (int i = 0; i < nprocs; ++i) {
-        if (proc_id == i) {
-                for (int j = 0; j < (sys.proc_seg->size); ++j) {
-                        printf("%d  %20.8f %20.8f %20.8f\n",
-                               j + sys.proc_seg->idx + 1, sys.vx[j],
-                               sys.vy[j], sys.vz[j]);
-                }
-        }
-        sleep(0.1);
-        MPI_Barrier(MPI_COMM_WORLD);
-}
- */
-	
-
-	
-	
-#endif
-
-#if defined(MPI_ENABLED)
-        int count[nprocs];
-        int offsets[nprocs];
-        mpi_collective_comm_arrays(nprocs, sys.proc_seg->splitting, count,
-                                   offsets);
-#endif
-	
 
         /* initialize forces and energies.*/
         sys.nfi = 0;
@@ -120,7 +83,7 @@ for (int i = 0; i < nprocs; ++i) {
 #endif
         force(&sys);
 #if defined(MPI_ENABLED)
-        mpi_reduce_forces(&sys, count, offsets);
+        mpi_reduce_forces(&sys);
 
 #endif
 #if defined(TIMING)
@@ -152,16 +115,6 @@ for (int i = 0; i < nprocs; ++i) {
 #if defined(MPI_ENABLED)
         }
 #endif
-        /*
-         #if defined(MPI_ENABLED)
-                cleanup_mdsys(&sys);
-                MPI_Finalize();
-                return 0;
-        #else
-                cleanup_mdsys(&sys);
-                return 0;
-        #endif
-*/
 
         /* reset timer */
         t_start = wallclock();
@@ -198,7 +151,7 @@ for (int i = 0; i < nprocs; ++i) {
 #endif
                 force(&sys);
 #if defined(MPI_ENABLED)
-                mpi_reduce_forces(&sys, count, offsets);
+                mpi_reduce_forces(&sys);
 #endif
 #if defined(TIMING)
                 force_t += wallclock() - tmp_t;
@@ -241,7 +194,7 @@ for (int i = 0; i < nprocs; ++i) {
         */
 
 #if defined(TIMING)
-		int t;
+        int t;
         double time_arr[] = {wallclock() - t_start, force_t, verlet_t, e_kin_t};
 
         for (t = 1; t < 4; ++t) {

@@ -9,7 +9,7 @@ int right_triangle_area(int l) { return l * (l + 1) / 2; }
 
 /* finds the maximum and minimum value of an int array */
 void max_min_arr(int *arr, int length, int *max_out, int *min_out) {
-		int k;
+        int k;
         int max = arr[0];
         int min = arr[0];
         for (k = 1; k < length; ++k) {
@@ -29,7 +29,7 @@ void max_min_arr(int *arr, int length, int *max_out, int *min_out) {
 */
 int max_min_index(int *arr, int length, int swch) {
         int i;
-		int idx = 0;
+        int idx = 0;
         int prev_val = arr[0];
         if (swch == 1) {
 
@@ -76,7 +76,7 @@ int max_min_index(int *arr, int length, int swch) {
 
 void split_triangle_equal_areas(int size, int nprocs, int *segment,
                                 int *segment_areas) {
-		int k;
+        int k;
         int subtr_areas[3 * nprocs];
 
         for (k = 0; k < nprocs; ++k) {
@@ -105,12 +105,11 @@ void split_triangle_equal_areas(int size, int nprocs, int *segment,
 
 void init_segments(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
                    const int size) {
-		int i,k;
+        int i, k;
         int segment[3 * nprocs];
         int segment_areas[3 * nprocs];
 
         split_triangle_equal_areas(size, nprocs, segment, segment_areas);
-	
 
         /*
                 to determine the best approx method we calculate the delta area
@@ -128,9 +127,8 @@ void init_segments(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
 
                 delta_area[i] = max_area - min_area;
         }
-	
+
         int best_method = max_min_index(delta_area, 3, 0);
-	
 
         int *best_segment = &segment[nprocs * best_method];
 
@@ -143,22 +141,6 @@ void init_segments(const int nprocs, const int proc_id, arr_seg_t *proc_seg,
                     best_segment[k] - best_segment[k - 1];
         }
 
-		
-		
         proc_seg->size = proc_seg->splitting[proc_id];
         proc_seg->idx = size - best_segment[nprocs - proc_id - 1];
-}
-
-extern void mpi_collective_comm_arrays(const int nprocs,
-                                       const int *const splitting, int *count,
-                                       int *offsets) {
-
-        memcpy(count, splitting, nprocs * sizeof(int));
-
-        offsets[0] = 0;
-		int p;
-        for (p = 0; p < nprocs - 1; ++p) {
-                offsets[p + 1] = offsets[p] + splitting[p];
-        }
-	
 }
