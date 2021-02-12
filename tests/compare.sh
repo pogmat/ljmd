@@ -8,10 +8,10 @@ run_test() {
 	
 	#echo "test $CMD $INPUT_DIR"
 	
-	${INPUT_DIR}/input_files/argon_2916.sh ${INPUT_DIR}/input_files | ${CMD}	
+	${INPUT_DIR}/input_files/argon_108.sh ${INPUT_DIR}/input_files | ${CMD}	
 
-	head -10 argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$1,$2,$3,$4);}'> a.dat
-	head -10 ${INPUT_DIR}/references/argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$1,$2,$3,$4);}'> b.dat
+	head -10 argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$1,$2,$3,$4);}'> a.dat
+	head -10 ${INPUT_DIR}/references/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$1,$2,$3,$4);}'> b.dat
 	SUCCESS=0
 	cmp a.dat b.dat && SUCCESS=1
 
