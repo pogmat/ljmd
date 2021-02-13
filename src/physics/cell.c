@@ -3,7 +3,7 @@
 #include "physics.h"
 
 /* (3^3 - 1) / 2 */
-#define HALFNEIGH 14
+#define HALFNEIGH 13
 
 /* helper function that determines the number of pairs
  * given a the number fo cells per side.
@@ -14,9 +14,9 @@
 static inline int pair_number(int ncs) {
 	switch (ncs) {
 	case 1:
-		return 1;
+		return 0;
 	case 2:
-		return 36;
+		return 28;
 	default:
 		return HALFNEIGH * ncs * ncs * ncs;
 	}
@@ -25,8 +25,7 @@ static inline int pair_number(int ncs) {
 /* helper function that build the list of interacting cells */
 static void build_pairs(mdsys_t *sys) {
 	/* Toric fan generating the positive cone */
-	int fan[HALFNEIGH][3] = {{ 0,  0,  0},
-				 { 1,  0,  0},
+	int fan[HALFNEIGH][3] = {{ 1,  0,  0},
 				 { 0,  1,  0},
 				 { 0,  0,  1},
 				 { 1,  1,  0},
@@ -43,15 +42,12 @@ static void build_pairs(mdsys_t *sys) {
 	
 	/* only one cell per side: the pairs list is trivial */
 	int ncellside = sys->ncellside;
-	if (ncellside == 1) {
-		sys->cellpairs[0] = 0;
-		sys->cellpairs[1] = 0;
+	if (ncellside == 1)
 		return;
-	}
 	/* two cells per side: every cell is close to another */
 	if (ncellside == 2) {
 		for (int l = 0, p = 0; l < 8; ++l)
-			for (int ll = l; ll < 8; ++ll) {
+			for (int ll = l + 1; ll < 8; ++ll) {
 				sys->cellpairs[p++] = l;
 				sys->cellpairs[p++] = ll;
 			}

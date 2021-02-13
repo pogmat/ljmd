@@ -86,7 +86,7 @@ TEST_P(build_pairs_test, fill)
 		k = l / (size * size);
 		j = (l % (size * size)) / size;
 		i = (l % (size * size)) % size;
-		for (int ll = l; ll < size3; ++ll) {
+		for (int ll = l + 1; ll < size3; ++ll) {
 			kk = ll / (size * size);
 			jj = (ll % (size * size)) / size;
 			ii = (ll % (size * size)) % size;
