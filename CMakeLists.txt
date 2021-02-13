@@ -74,7 +74,7 @@ endif()
 
 
 #compilation options list
-list(APPEND main_flags -Wall -g -O3 -ffast-math -fomit-frame-pointer)
+list(APPEND main_flags -Wall -g -O3 -ffast-math -msse3 -fexpensive-optimizations )
 
 #compile options
 target_compile_options (${tgt_name}  PRIVATE ${main_flags}  )

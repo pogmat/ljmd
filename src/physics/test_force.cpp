@@ -27,6 +27,11 @@ TEST(ForceTestSingle, single) {
         proc_seg.idx = 0;
 #endif
 
+
+	sys->rx = new double[1];
+	sys->ry = new double[1];
+	sys->rz = new double[1];
+	
         sys->fx = new double[1];
         sys->fy = new double[1];
         sys->fz = new double[1];
@@ -160,3 +165,4 @@ INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
                          ::testing::Values(0.0, 0.5, 1.0));
 // INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
 //                        ::testing::Values( 1.0));
+
