@@ -12,19 +12,21 @@ jobs:
   
     runs-on: ubuntu-latest
     
+    
     steps:
     #prepare cache for openmpi
     - name: Cache openmpi
       uses: actions/cache@v2
       env:
         cache-name: cache-openmpi
+        mpi_ver: 4.1.0
+        
       with:
         # openmpi cache files are stored in `~/.openmpi` on Linux/macOS
-        path: ~/.openmpi
-        key: build-${{ env.cache-name }}-${{ hashFiles('.github/MPI_install_script/MPI_install.sh') }}
+        path: "~/openmpi/${{ var.mpi_ver }}"
+        key:  build-${{ env.cache-name }}-${{ hashFiles('.github/MPI_install_script/MPI_install.sh') }}
 
 
-    	
     #download and install openmpi
     - name: get and install openmpi
       if: steps.openmpi-cache.outputs.cache-hit != 'true'
