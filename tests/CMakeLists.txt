@@ -83,6 +83,9 @@ target_link_libraries(test_force PRIVATE GTest::GTestMain GTest::GTest ljmd_phys
 add_test(NAME force COMMAND test_force )
 
 
+endif()
+
+
 # ekin and temp tests
 
 
@@ -102,7 +105,6 @@ target_include_directories(test_verlet PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_S
 target_link_libraries(test_verlet PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib ljmd_common_lib)
 add_test(NAME verlet COMMAND test_verlet )
 
-endif()
 
 # reference test
 find_program(BASH_PROGRAM bash)
@@ -156,31 +158,40 @@ if(ENABLE_MPI)
 	create_test_mpi(NAME mpi_comm NPROCS 4 SRC ${ljmd_SOURCE_FILES}/mpi/mpi_comm/test_mpi_comm.cpp 
 				COMMAND $<TARGET_FILE:test_mpi_comm>  LIBS ${MPI_COMM_TEST_LIBS}  )
 				
-	#MPI ekin test
-	set( MPI_EKT_TEST_LIBS 
-			ljmd_phys_lib
-			ljmd_common_lib
-		)
-	create_test_mpi(NAME ekin NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_ekin.cpp
-				COMMAND $<TARGET_FILE:test_ekin>  LIBS ${MPI_EKT_TEST_LIBS}  )
+	###MPI ekin test
+	##set( MPI_EKT_TEST_LIBS 
+	##		ljmd_phys_lib
+	##		ljmd_common_lib
+	##	)
+	##create_test_mpi(NAME ekin NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_ekin.cpp
+	##			COMMAND $<TARGET_FILE:test_ekin>  LIBS ${MPI_EKT_TEST_LIBS}  )
+	##
+	##		
+	###MPI force test
+	##set( MPI_FORCE_TEST_LIBS 
+	##		ljmd_phys_lib
+	##		ljmd_common_lib
+	##	)
+	##create_test_mpi(NAME force NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_force.cpp
+	##			COMMAND $<TARGET_FILE:test_force>  LIBS ${MPI_FORCE_TEST_LIBS}  )
+	##	
+	##	
+	###MPI integration test
+	##set( MPI_FORCE_TEST_LIBS 
+	##		ljmd_phys_lib
+	##		ljmd_common_lib
+	##	)
+	##create_test_mpi(NAME verlet NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_integration.cpp
+	##			COMMAND $<TARGET_FILE:test_verlet>  LIBS ${MPI_FORCE_TEST_LIBS}  )
 	
-			
 	#MPI force test
 	set( MPI_FORCE_TEST_LIBS 
 			ljmd_phys_lib
 			ljmd_common_lib
+			ljmd_mpi_util_lib
 		)
-	create_test_mpi(NAME force NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_force.cpp
-				COMMAND $<TARGET_FILE:test_force>  LIBS ${MPI_FORCE_TEST_LIBS}  )
-		
-		
-	#MPI integration test
-	set( MPI_FORCE_TEST_LIBS 
-			ljmd_phys_lib
-			ljmd_common_lib
-		)
-	create_test_mpi(NAME verlet NPROCS 4 SRC ${ljmd_SOURCE_FILES}/physics/test_integration.cpp
-				COMMAND $<TARGET_FILE:test_verlet>  LIBS ${MPI_FORCE_TEST_LIBS}  )
+	create_test_mpi(NAME mpi_force NPROCS 3 SRC ${ljmd_SOURCE_FILES}/physics/test_mpi_force.cpp
+				COMMAND $<TARGET_FILE:test_mpi_force>  LIBS ${MPI_FORCE_TEST_LIBS}  )
 				
 	
 endif()

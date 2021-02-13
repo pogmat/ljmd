@@ -103,7 +103,10 @@ class segments_test : public ::testing::TestWithParam<int> {
         void SetUp() {
                 nprocs = 4;
                 proc_seg = new arr_seg_t;
+                ASSERT_TRUE(proc_seg);
+
                 proc_seg->splitting = new int[nprocs]();
+                ASSERT_TRUE(proc_seg->splitting);
         }
 
         void TearDown() {
@@ -112,6 +115,32 @@ class segments_test : public ::testing::TestWithParam<int> {
                 delete proc_seg;
         }
 };
+
+TEST_P(segments_test, minimal) {
+
+        ASSERT_EQ(nprocs, 4);
+        ASSERT_TRUE(proc_id >= 0);
+        ASSERT_TRUE(proc_id < nprocs);
+        ASSERT_TRUE(proc_seg);
+        ASSERT_TRUE(proc_seg);
+
+        size = 4;
+
+        init_segments(nprocs, proc_id, proc_seg, size);
+
+        EXPECT_EQ(proc_seg->splitting[0], 1);
+        EXPECT_EQ(proc_seg->splitting[1], 1);
+        EXPECT_EQ(proc_seg->splitting[2], 0);
+        EXPECT_EQ(proc_seg->splitting[3], 2);
+
+        EXPECT_EQ(proc_seg->size, proc_seg->splitting[proc_id]);
+
+        int exp_idx = 0;
+        for (int p = 0; p < proc_id; ++p) {
+                exp_idx += proc_seg->splitting[p];
+        }
+        EXPECT_EQ(proc_seg->idx, exp_idx);
+}
 
 TEST_P(segments_test, small) {
 
@@ -122,8 +151,6 @@ TEST_P(segments_test, small) {
         ASSERT_TRUE(proc_seg);
 
         size = 8;
-
-        ASSERT_TRUE(proc_seg->splitting);
 
         init_segments(nprocs, proc_id, proc_seg, size);
 
@@ -150,8 +177,6 @@ TEST_P(segments_test, large) {
         ASSERT_TRUE(proc_seg);
 
         size = 2916;
-
-        ASSERT_TRUE(proc_seg->splitting);
 
         init_segments(nprocs, proc_id, proc_seg, size);
 
