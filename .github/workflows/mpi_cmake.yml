@@ -24,24 +24,21 @@ jobs:
       with:
         # openmpi cache files are stored in `~/.openmpi` on Linux/macOS
         path: "~/openmpi/${{ env.mpi_ver }}"
-        key:  build-${{ env.cache-name }}-${{ hashFiles('MPI_install_script/MPI_install.sh') }}
+        key:  build-${{ env.cache-name }}-${{ hashFiles('./openmpi-4.1.0.tar.gz') }}
 
-
-    #download and install openmpi
-    - name: get and install openmpi
-      if: steps.cache-openmpi.outputs.cache-hit != 'true'
-      run: ./MPI_install_script/MPI_install.sh
+    - name: get openmpi
+      run: wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.0.tar.gz
       
- #   - name: untar openmpi
- #     run: tar -xvf ./openmpi-4.1.0.tar.gz
- #     
-#    - name: configure openmpi
-#      run: ./openmpi-4.1.0/configure --prefix="/home/${USER}/.openmpi"
-#      
-#    - name: install openmpi
-#      run: |
-#        make -j
-#        sudo make install
+    - name: untar openmpi
+      run: tar -xvf ./openmpi-4.1.0.tar.gz
+     
+    - name: configure openmpi
+      run: ./openmpi-4.1.0/configure --prefix="/home/${USER}/.openmpi"
+      
+    - name: install openmpi
+      run: |
+        make -j
+        sudo make install
   
   
   
