@@ -29,7 +29,7 @@ jobs:
 
     #download and install openmpi
     - name: get and install openmpi
-      if: steps.openmpi-cache.outputs.cache-hit != 'true'
+      if: steps.cache-openmpi.outputs.cache-hit != 'true'
       run: ./MPI_install_script/MPI_install.sh
       
  #   - name: untar openmpi
