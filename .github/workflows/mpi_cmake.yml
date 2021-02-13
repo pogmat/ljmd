@@ -4,7 +4,7 @@ on: [push]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Debug-MPI
 
 jobs:
      
@@ -13,13 +13,26 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    #prepare cache for openmpi
+    - name: Cache openmpi
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-openmpi
+      with:
+        # openmpi cache files are stored in `~/.openmpi` on Linux/macOS
+        path: ~/.openmpi
+        key: build-${{ env.cache-name }}-${{ hashFiles('.github/MPI_install_script/MPI_install.sh') }}
+        restore-keys: |
+
+    	
     #download and install openmpi
-    - name: get openmpi
-      run: wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.0.tar.gz
+    - name: get and install openmpi
+      if: steps.openmpi-cache.outputs.cache-hit != 'true'
+      run: .github/MPI_install_script/MPI_install.sh
       
-    - name: untar openmpi
-      run: tar -xvf ./openmpi-4.1.0.tar.gz
-      
+ #   - name: untar openmpi
+ #     run: tar -xvf ./openmpi-4.1.0.tar.gz
+ #     
 #    - name: configure openmpi
 #      run: ./openmpi-4.1.0/configure --prefix="/home/${USER}/.openmpi"
 #      
