@@ -22,7 +22,7 @@ jobs:
         # openmpi cache files are stored in `~/.openmpi` on Linux/macOS
         path: ~/.openmpi
         key: build-${{ env.cache-name }}-${{ hashFiles('.github/MPI_install_script/MPI_install.sh') }}
-        restore-keys: |
+
 
     	
     #download and install openmpi
