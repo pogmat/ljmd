@@ -1,6 +1,8 @@
+perf
 build
 *.o
 *.x
 *.a
 *.so
 .#*
+.data
