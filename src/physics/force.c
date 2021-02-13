@@ -26,7 +26,7 @@ void force(mdsys_t *sys) {
         azzero(sys->fz, sys->natoms);
 
        #ifdef _OMP_NAIVE
-       #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, r, ffac,) reduction(+:epot)
+       #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
        #endif
         for (i = 0; i < (sys->natoms); ++i) {
                 for (j = 0; j < (sys->natoms); ++j) {
@@ -55,7 +55,9 @@ void force(mdsys_t *sys) {
                                 sys->fy[i] += ry / r * ffac;
                                 sys->fz[i] += rz / r * ffac;
                         }
-                        sys->epot = epot;
+                        
                 }
         }
+
+        sys->epot = epot;
 }
