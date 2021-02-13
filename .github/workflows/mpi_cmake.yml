@@ -45,7 +45,7 @@ jobs:
         make -j 2
         sudo make install
         
-  
+
   
   
 #    # The CMake configure and build commands are platform agnostic and should work equally
