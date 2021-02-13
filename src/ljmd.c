@@ -70,7 +70,6 @@ int main(int argc, char **argv) {
         io_t += wallclock() - tmp_t;
 #endif
 
-
         /* initialize forces and energies.*/
         sys.nfi = 0;
 

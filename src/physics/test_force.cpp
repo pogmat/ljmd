@@ -158,5 +158,3 @@ TEST_P(ForceTest, longrange) {
 
 INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
                          ::testing::Values(0.0, 0.5, 1.0));
-// INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
-//                        ::testing::Values( 1.0));

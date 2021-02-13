@@ -32,7 +32,7 @@ void force(mdsys_t *sys) {
 
 #if defined(MPI_ENABLED)
         // printf(" from %d %d %d \n", sys->proc_id, sys->proc_seg->idx,
-        // sys->proc_seg->idx + sys->proc_seg->size); sleep(0.5);
+        //  sys->proc_seg->idx + sys->proc_seg->size); sleep(0.5);
         for (i = sys->proc_seg->idx;
              i < (sys->proc_seg->idx + sys->proc_seg->size); ++i) {
                 for (j = i + 1; j < (sys->natoms); ++j) {
