@@ -15,3 +15,16 @@ target_compile_options (ljmd_phys_lib PRIVATE ${phys_flags}  )
 
 get_target_property(PHYS_COMPILE_OPT ljmd_phys_lib COMPILE_OPTIONS)
 message("-- ljmd_phys_lib compiler flags are: ${PHYS_COMPILE_OPT}")
+
+##########################
+# _OMP_NAIVE
+##########################
+
+# target library name and sources
+add_library(ljmd_phys_lib_omp_naive integration.c force.c ekin.c utils.c)
+find_package(OpenMP REQUIRED)
+target_link_libraries(ljmd_phys_lib_omp_naive PRIVATE m OpenMP::OpenMP_C)
+
+# compile options
+target_compile_options(ljmd_phys_lib_omp_naive PRIVATE ${phys_flags})
+target_compile_definitions(ljmd_phys_lib_omp_naive PRIVATE _OMP_NAIVE)

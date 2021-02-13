@@ -19,11 +19,15 @@ void force(mdsys_t *sys) {
         int i, j;
 
         /* zero energy and forces */
-        sys->epot = 0.0;
+        double epot = 0.0;
+
         azzero(sys->fx, sys->natoms);
         azzero(sys->fy, sys->natoms);
         azzero(sys->fz, sys->natoms);
 
+       #ifdef _OMP_NAIVE
+       #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, r, ffac,) reduction(+:epot)
+       #endif
         for (i = 0; i < (sys->natoms); ++i) {
                 for (j = 0; j < (sys->natoms); ++j) {
 
@@ -43,7 +47,7 @@ void force(mdsys_t *sys) {
                                        (-12.0 * pow(sys->sigma / r, 12.0) / r +
                                         6 * pow(sys->sigma / r, 6.0) / r);
 
-                                sys->epot += 0.5 * 4.0 * sys->epsilon *
+                                epot += 0.5 * 4.0 * sys->epsilon *
                                              (pow(sys->sigma / r, 12.0) -
                                               pow(sys->sigma / r, 6.0));
 
@@ -51,6 +55,7 @@ void force(mdsys_t *sys) {
                                 sys->fy[i] += ry / r * ffac;
                                 sys->fz[i] += rz / r * ffac;
                         }
+                        sys->epot = epot;
                 }
         }
 }
