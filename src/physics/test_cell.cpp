@@ -1,6 +1,10 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <random>
+#include <map>
+
+#include <iostream>
 
 #include "gtest/gtest.h"
 
@@ -39,27 +43,31 @@ protected:
 		}
 };
 
-class which_cell_test: public ::testing::TestWithParam<std::pair<double, double>> {
+
+class which_cell_test: public ::testing::TestWithParam<std::pair<int, double>> {
 
 protected:
-	
-	double box = GetParam().first;
-	double cellsize = GetParam().second;
-	mdsys_t* sys;
+
+	mdsys_t sys;
+	int ncell = GetParam().first;
+	double boxsize = GetParam().second;
+	double cellsize = boxsize / ncell;
+	using real_dist = std::uniform_real_distribution<double>;
+	std::map<int, real_dist> dists;
+	std::default_random_engine re;
 
 	virtual void SetUp() override
 		{
-		        sys = new mdsys_t;
-			sys->box = box;
-			sys->cellsize = cellsize;
-		}
+			sys.box = boxsize;
+			sys.cellsize = cellsize;
 
-	virtual void TearDown() override
-		{
-			delete sys;
+			for (int i = -2 * ncell; i < 2 * ncell; ++i)
+				dists.emplace(i, real_dist(-boxsize / 2 + i * cellsize,
+						           -boxsize / 2 + (i + 1) * cellsize));   
+			
 		}
+	
 };
-
 
 TEST_P(build_pairs_test, fill)
 {
@@ -100,6 +108,30 @@ TEST_P(build_pairs_test, fill)
 	}
 }
 
+TEST_P(which_cell_test, normal) {
+	int idx;
+	real_dist d;
+	//std::cout << boxsize << std::endl;
+	//std::cout << ncell << std::endl;
+	//std::cout << cellsize << std::endl;
+	for (const auto& el: dists) {
+	        idx = el.first;
+		d = el.second;
+		for (int l = 0; l < 5; ++l)
+			ASSERT_EQ(which_cell(d(re), &sys), (idx + 4 * ncell) % ncell);
+	}
+}
+
+
 INSTANTIATE_TEST_SUITE_P(build_pairs_test_parametric,
 			 build_pairs_test,
 			 ::testing::Values(1, 2, 3, 4, 5));
+
+
+INSTANTIATE_TEST_SUITE_P(which_cell_test_parametric,
+			 which_cell_test,
+			 ::testing::Values(std::make_pair<int, double>(1, 10.0),
+					   std::make_pair<int, double>(2, 16.0),
+					   std::make_pair<int, double>(3, 5.64),
+					   std::make_pair<int, double>(4, 23.5),
+					   std::make_pair<int, double>(5, 4.33)));

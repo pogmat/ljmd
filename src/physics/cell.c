@@ -84,8 +84,16 @@ void build_cells(mdsys_t *sys) {
 	build_pairs(sys);
 }
 
-/* helper function that determines in which cell an atom belogs to */
+/* helper function that determines in which cell an atom belogs to.
+ * Notice that the the cells are set in the following way:
+ * 0 => [-box/2                 , -box/2 +     cellsize)
+ * 1 => [-box/2 +     cellsize  , -box/2 + 2 * cellsize)
+ * 2 => [-box/2 + 2 * cellsize  , -box/2 + 3 * cellsize)
+ * ...
+ */
+
+
 inline int which_cell(double x, const mdsys_t *sys) {
 	double boxby2 = 0.5 * sys->box;
-	return (int)((pbc(x, 0.5 * boxby2) + boxby2) / sys->cellsize);
+	return (int)((pbc(x, boxby2) + boxby2) / sys->cellsize);
 }
