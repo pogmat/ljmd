@@ -1,4 +1,4 @@
-name: CMake Integration and Unit Test
+name: MPI CMake Integration and Unit Test
 
 on: [push]
 
