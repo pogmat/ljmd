@@ -3,9 +3,13 @@
 
 #include "common.h"
 
+#if defined(MPI_ENABLED)
+#include "mpi.h"
+#include "mpi_headers/mpi_utils.h"
+#endif
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* a few physical constants */
@@ -18,9 +22,12 @@ struct _mdsys {
         int natoms, nfi, nsteps;
         double dt, mass, epsilon, sigma, box, rcut;
         double ekin, epot, temp;
-        double *rx, *ry, *rz;
-        double *vx, *vy, *vz;
-        double *fx, *fy, *fz;
+        vec3_t *r, *v, *f;
+#if defined(MPI_ENABLED)
+        int nprocs;
+        int proc_id;
+        arr_seg_t *proc_seg;
+#endif
 };
 typedef struct _mdsys mdsys_t;
 
@@ -30,7 +37,7 @@ extern void force(mdsys_t *sys);
 extern void verlet_1(mdsys_t *sys);
 extern void verlet_2(mdsys_t *sys);
 
-#ifdef __cplusplus	
+#ifdef __cplusplus
 }
 #endif
 
