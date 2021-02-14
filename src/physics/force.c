@@ -43,7 +43,14 @@ void force(mdsys_t *sys) {
 		f1x = 0.0;
 		f1y = 0.0;
 		f1z = 0.0;
+
+                #ifdef _OMP_NAIVE
+                for (j = 0; j < (sys->natoms); ++j) {
+                        if(i == j) continue;
+                #else
                 for (j = i + 1; j < (sys->natoms); ++j) {
+                #endif
+
                         /* get distance between particle i and j */
                         rx = pbc(r1x - sys->rx[j], 0.5 * sys->box);
                         ry = pbc(r1y - sys->ry[j], 0.5 * sys->box);
@@ -60,9 +67,12 @@ void force(mdsys_t *sys) {
                                 f1x += rx * ffac;
                                 f1y += ry * ffac;
                                 f1z += rz * ffac;
+
+                                #ifndef _OMP_NAIVE
 				sys->fx[j] -= rx * ffac;
 				sys->fy[j] -= ry * ffac;
 				sys->fz[j] -= rz * ffac;
+                                #endif
                         }
                         
                 }
@@ -72,4 +82,8 @@ void force(mdsys_t *sys) {
         }
 
         sys->epot = epot;
+
+        #ifdef _OMP_NAIVE
+        sys->epot /= 2.0;
+        #endif
 }
