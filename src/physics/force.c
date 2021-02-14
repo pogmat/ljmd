@@ -3,6 +3,10 @@
 
 #include "physics.h"
 
+#if defined(MPI_ENABLED)
+#include "mpi_headers/mpi_utils.h"
+#endif
+
 /* helper function: apply minimum image convention */
 static double pbc(double x, const double boxby2) {
         while (x > boxby2)
@@ -11,7 +15,6 @@ static double pbc(double x, const double boxby2) {
                 x += 2.0 * boxby2;
         return x;
 }
-
 
 /* compute forces */
 void force(mdsys_t *sys) {
@@ -26,6 +29,7 @@ void force(mdsys_t *sys) {
         azzero(sys->fy, sys->natoms);
         azzero(sys->fz, sys->natoms);
 
+
 	double c12 = 4.0 * sys->epsilon * pow(sys->sigma, 12.0);
 	double c6  = 4.0 * sys->epsilon * pow(sys->sigma,  6.0);
 	double rcsq = sys->rcut * sys->rcut;
@@ -33,10 +37,21 @@ void force(mdsys_t *sys) {
 	double r1x, r1y, r1z;
 	double f1x, f1y, f1z;
 
+	#if defined(MPI_ENABLED)
+
+	for (i = sys->proc_seg->idx;
+             i < (sys->proc_seg->idx + sys->proc_seg->size); ++i) {
+
+
+	#else
+
         #ifdef _OMP_NAIVE
         #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, ffac, r1x, r1y, r1z, f1x, f1y, f1z, rsq, rinv, r6) reduction(+:epot)
         #endif
-        for (i = 0; i < (sys->natoms); ++i) {
+	for (i = 0; i < (sys->natoms); ++i) {
+
+	#endif
+
 
 		r1x = sys->rx[i];
 		r1y = sys->ry[i];
@@ -58,7 +73,7 @@ void force(mdsys_t *sys) {
                         rz = pbc(r1z - sys->rz[j], 0.5 * sys->box);
                         rsq = rx * rx + ry * ry + rz * rz;
 
-                        /* compute force and energy if within cutoff */
+			 /* compute force and energy if within cutoff */
                         if (rsq < rcsq) {
 				rinv = 1.0 / rsq;
 				r6 = rinv * rinv * rinv;

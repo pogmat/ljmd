@@ -4,6 +4,7 @@
 
 /* first part: propagate velocities by half and positions by full step  */
 void verlet_1(mdsys_t *sys) {
+
         #ifdef _OMP_NAIVE
         #pragma omp parallel for default(shared)
         #endif
@@ -19,6 +20,7 @@ void verlet_1(mdsys_t *sys) {
 
 /* second part: propagate velocities by another half step */
 void verlet_2(mdsys_t *sys) {
+
         #ifdef _OMP_NAIVE
         #pragma omp parallel for default(shared)
         #endif
@@ -28,4 +30,3 @@ void verlet_2(mdsys_t *sys) {
                 sys->vz[i] += 0.5 * sys->dt / mvsq2e * sys->fz[i] / sys->mass;
         }
 }
-

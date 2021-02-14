@@ -10,35 +10,36 @@ extern "C" {
 }
 
 TEST(test_input, get_a_line) {
-  char line[BLEN], buffer[BLEN];
-  FILE *fstream;
+        char line[BLEN], buffer[BLEN];
+        FILE *fstream;
 
-  // Testing integer parsing
-  sprintf(buffer, "42          # This is an integer input\n");
-  fstream = fmemopen(buffer, BLEN, "r");
-  ASSERT_NE(fstream, nullptr);
+        // Testing integer parsing
+        sprintf(buffer, "42          # This is an integer input\n");
+        fstream = fmemopen(buffer, BLEN, "r");
+        ASSERT_NE(fstream, nullptr);
 
-  get_a_line(fstream, line);
-  ASSERT_EQ(42, atoi(line));
-  fclose(fstream);
+        get_a_line(fstream, line);
+        ASSERT_EQ(42, atoi(line));
+        fclose(fstream);
 
-  // Testing double precision number parsing
-  sprintf(buffer, "3.14159265359# This is an integer input\n");
-  fstream = fmemopen(buffer, BLEN, "r");
-  ASSERT_NE(fstream, nullptr);
+        // Testing double precision number parsing
+        sprintf(buffer, "3.14159265359# This is an integer input\n");
+        fstream = fmemopen(buffer, BLEN, "r");
+        ASSERT_NE(fstream, nullptr);
 
-  get_a_line(fstream, line);
-  ASSERT_DOUBLE_EQ(3.14159265359, atof(line));
-  fclose(fstream);
+        get_a_line(fstream, line);
+        ASSERT_DOUBLE_EQ(3.14159265359, atof(line));
+        fclose(fstream);
 
-  // Testing string parsing
-  sprintf(buffer, "this_is_a_file_name.txt     # This is an integer input\n");
-  fstream = fmemopen(buffer, BLEN, "r");
-  ASSERT_NE(fstream, nullptr);
+        // Testing string parsing
+        sprintf(buffer,
+                "this_is_a_file_name.txt     # This is an integer input\n");
+        fstream = fmemopen(buffer, BLEN, "r");
+        ASSERT_NE(fstream, nullptr);
 
-  get_a_line(fstream, line);
-  ASSERT_STREQ("this_is_a_file_name.txt", line);
-  fclose(fstream);
+        get_a_line(fstream, line);
+        ASSERT_STREQ("this_is_a_file_name.txt", line);
+        fclose(fstream);
 }
 
 TEST(test_input, initialise) {

@@ -7,9 +7,12 @@
 #include <omp.h>
 #endif
 
+#if defined(MPI_ENABLED)
+#include "mpi_headers/mpi_utils.h"
+#endif
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* a few physical constants */
@@ -25,6 +28,11 @@ struct _mdsys {
         double *rx, *ry, *rz;
         double *vx, *vy, *vz;
         double *fx, *fy, *fz;
+#if defined(MPI_ENABLED)
+        int nprocs;
+        int proc_id;
+        arr_seg_t *proc_seg;
+#endif
 };
 typedef struct _mdsys mdsys_t;
 
@@ -34,7 +42,7 @@ extern void force(mdsys_t *sys);
 extern void verlet_1(mdsys_t *sys);
 extern void verlet_2(mdsys_t *sys);
 
-#ifdef __cplusplus	
+#ifdef __cplusplus
 }
 #endif
 

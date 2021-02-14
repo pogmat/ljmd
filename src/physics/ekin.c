@@ -1,4 +1,5 @@
 #include "physics.h"
+#include <stdio.h>
 
 /* compute kinetic energy */
 void ekin(mdsys_t *sys) {

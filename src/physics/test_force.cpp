@@ -3,7 +3,7 @@
 /* inclusion of source file is needed
  * since we want to test a static function  */
 extern "C" {
-		#include "force.c"
+#include "force.c"
 }
 
 TEST(pbc_test, inside) {
@@ -19,6 +19,14 @@ TEST(pbc_test, outside) {
 TEST(ForceTestSingle, single) {
         mdsys_t *sys = new mdsys_t;
         sys->natoms = 1;
+
+#if defined(MPI_ENABLED)
+        arr_seg_t proc_seg;
+        sys->proc_seg = &proc_seg;
+        proc_seg.size = sys->natoms;
+        proc_seg.idx = 0;
+#endif
+
 
 	sys->rx = new double[1];
 	sys->ry = new double[1];
@@ -38,14 +46,18 @@ TEST(ForceTestSingle, single) {
         delete[] sys->fx;
         delete[] sys->fy;
         delete[] sys->fz;
+
+#if defined(MPI_ENABLED)
+        sys->proc_seg = nullptr;
+#endif
         delete sys;
 }
 
 class ForceTest : public ::testing::TestWithParam<double> {
 
-protected:
+      protected:
         mdsys_t *sys;
-		int eps_param = GetParam();
+        int eps_param = GetParam();
 
         void SetUp() {
                 sys = new mdsys_t;
@@ -53,6 +65,11 @@ protected:
                 sys->epsilon = eps_param;
                 sys->sigma = 1.0;
                 sys->box = 10.0;
+
+#if defined(MPI_ENABLED)
+                arr_seg_t proc_seg;
+                sys->proc_seg = &proc_seg;
+#endif
 
                 sys->rx = new double[2]();
                 sys->ry = new double[2]();
@@ -77,6 +94,9 @@ protected:
                 delete[] sys->fy;
                 delete[] sys->fz;
 
+#if defined(MPI_ENABLED)
+                sys->proc_seg = nullptr;
+#endif
                 delete sys;
         }
 };
@@ -92,17 +112,21 @@ TEST_P(ForceTest, shortrange) {
         ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
         ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
 
+#if defined(MPI_ENABLED)
+        sys->proc_seg->size = 2;
+        sys->proc_seg->idx = 0;
+#endif
         sys->rcut = 0.5;
 
         force(sys);
 
-        ASSERT_DOUBLE_EQ(sys->fx[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fx[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->epot, 0.0);
+        EXPECT_DOUBLE_EQ(sys->fx[0], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fx[1], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fy[0], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fy[1], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fz[0], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fz[1], 0.0);
+        EXPECT_DOUBLE_EQ(sys->epot, 0.0);
 }
 
 TEST_P(ForceTest, longrange) {
@@ -116,22 +140,26 @@ TEST_P(ForceTest, longrange) {
         ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
         ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
 
+#if defined(MPI_ENABLED)
+        sys->proc_seg->size = 2;
+        sys->proc_seg->idx = 0;
+#endif
+
         sys->rcut = 4.0;
 
         force(sys);
 
-        double exp_epot = -eps_param*63.0 / 1024.0;
-        double exp_ff = -eps_param*93.0 / 512.0;
+        double exp_epot = -eps_param * 63.0 / 1024.0;
+        double exp_ff = -eps_param * 93.0 / 512.0;
 
-        ASSERT_DOUBLE_EQ(sys->fx[0], -exp_ff);
-        ASSERT_DOUBLE_EQ(sys->fx[1], exp_ff);
-        ASSERT_DOUBLE_EQ(sys->fy[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fy[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->fz[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->epot, exp_epot);
+        EXPECT_DOUBLE_EQ(sys->fx[0], -exp_ff);
+        EXPECT_DOUBLE_EQ(sys->fx[1], exp_ff);
+        EXPECT_DOUBLE_EQ(sys->fy[0], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fy[1], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fz[0], 0.0);
+        EXPECT_DOUBLE_EQ(sys->fz[1], 0.0);
+        EXPECT_DOUBLE_EQ(sys->epot, exp_epot);
 }
 
-INSTANTIATE_TEST_SUITE_P(ForceTest_parametric,
-			 ForceTest,
-			 ::testing::Values(0.0, 0.5, 1.0));
+INSTANTIATE_TEST_SUITE_P(ForceTest_parametric, ForceTest,
+                         ::testing::Values(0.0, 0.5, 1.0));
