@@ -109,6 +109,6 @@ void force(mdsys_t *sys) {
         sys->epot = epot;
 
         #ifdef _OMP_NAIVE
-        sys->epot /= 2.0;
+        sys->epot *= 0.5;
         #endif
 }
