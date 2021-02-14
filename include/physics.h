@@ -4,8 +4,8 @@
 #include "common.h"
 
 #if defined(MPI_ENABLED)
-#include "mpi_headers/mpi_utils.h"
 #include "mpi.h"
+#include "mpi_headers/mpi_utils.h"
 #endif
 
 #ifdef __cplusplus
@@ -16,7 +16,6 @@ extern "C" {
 static const double kboltz = 0.0019872067; /* boltzman constant in kcal/mol/K */
 static const double mvsq2e = 2390.05736153349; /* m*v^2 in kcal/mol */
 
-	
 /* structure to hold the complete information
  * about the MD system */
 struct _mdsys {
@@ -28,7 +27,6 @@ struct _mdsys {
         int nprocs;
         int proc_id;
         arr_seg_t *proc_seg;
-		MPI_Datatype MPI_vec3;
 #endif
 };
 typedef struct _mdsys mdsys_t;

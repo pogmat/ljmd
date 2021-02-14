@@ -22,21 +22,17 @@ class MPI_broadc_pos_test : public ::testing::Test {
                 sys->natoms = 4;
                 sys->nprocs = nprocs;
                 sys->proc_id = proc_id;
-				
-				sys->r = new vec3_t[4];
+
+                sys->r = new vec3_t[4];
 
                 if (proc_id == 0) {
 
-						
-					
-						for (int i=0; i < 4; ++i ) {
-							sys->r[i].x = i*10.0;
-							sys->r[i].y = i*10.0;
-							sys->r[i].z = i*10.0;
-						}
-                       
-
-                } 
+                        for (int i = 0; i < 4; ++i) {
+                                sys->r[i].x = i * 10.0;
+                                sys->r[i].y = i * 10.0;
+                                sys->r[i].z = i * 10.0;
+                        }
+                }
         }
 
         void TearDown() {
@@ -72,9 +68,8 @@ class MPI_reduce_forces_u_test : public ::testing::Test {
                 sys->natoms = 4;
                 sys->nprocs = nprocs;
                 sys->proc_id = proc_id;
-			
-				sys->f = new vec3_t[4]();
 
+                sys->f = new vec3_t[4]();
 
                 sys->f[proc_id].x = proc_id;
                 sys->f[proc_id].y = proc_id;
@@ -85,7 +80,7 @@ class MPI_reduce_forces_u_test : public ::testing::Test {
 
         void TearDown() {
                 delete[] sys->f;
-			
+
                 delete sys;
         }
 };

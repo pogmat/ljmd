@@ -124,15 +124,15 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
 #endif
 
         /* allocate memory */
-        sys->r =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
-		sys->f =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+        sys->r = (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+        sys->f = (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
 #if !defined(MPI_ENABLED)
-        sys->v =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+        sys->v = (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
 #else
         if (sys->proc_id != 0) {
-                sys->v =  (vec3_t *)malloc( 1);
+                sys->v = (vec3_t *)malloc(1);
         } else {
-                sys->v =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+                sys->v = (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
 
 #endif
 
@@ -148,7 +148,7 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
                                &(sys->v[i].z));
                 }
                 fclose(fp);
-                //azzero(sys->f, sys->natoms);
+                // azzero(sys->f, sys->natoms);
         } else {
                 perror("cannot read restart file");
                 return 3;

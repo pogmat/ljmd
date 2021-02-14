@@ -9,12 +9,11 @@ extern "C" {
 
 /* structure to hold 3-vectors */
 struct _vec3 {
-	double x;
-	double y;
-	double z;
+        double x;
+        double y;
+        double z;
 };
 typedef struct _vec3 vec3_t;
-	
 
 double wallclock();
 

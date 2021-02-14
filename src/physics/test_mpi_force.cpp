@@ -30,7 +30,7 @@ TEST(MPIForceTestSingle, single) {
         proc_seg.size = sys->natoms;
         proc_seg.idx = 0;
 
-       	sys->f = new vec3_t[1];
+        sys->f = new vec3_t[1];
 
         force(sys);
 
@@ -76,10 +76,9 @@ class MPI_ForceTest : public ::testing::TestWithParam<double> {
                 sys->nprocs = nprocs;
                 sys->proc_id = proc_id;
 
-				sys->r = new vec3_t[3]();
+                sys->r = new vec3_t[3]();
 
                 sys->f = new vec3_t[3];
-			
 
                 sys->r[0].x = -1.0;
                 sys->r[1].x = 0.0;
@@ -87,9 +86,9 @@ class MPI_ForceTest : public ::testing::TestWithParam<double> {
         }
 
         void TearDown() {
-                 delete[] sys->r;
+                delete[] sys->r;
                 delete[] sys->f;
-			
+
                 delete proc_seg.splitting;
 
                 sys->proc_seg = nullptr;

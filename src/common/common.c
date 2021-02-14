@@ -1,5 +1,5 @@
-#include <sys/time.h>
 #include "common.h"
+#include <sys/time.h>
 
 /* helper function: get current time in seconds since epoch */
 
@@ -14,7 +14,7 @@ void azzero(vec3_t *v, const int n) {
         int i;
         for (i = 0; i < n; ++i) {
                 (v + i)->x = 0.0;
-		(v + i)->y = 0.0;
-		(v + i)->z = 0.0;
+                (v + i)->y = 0.0;
+                (v + i)->z = 0.0;
         }
 }

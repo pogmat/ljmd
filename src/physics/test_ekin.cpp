@@ -15,16 +15,15 @@ class Ekin_T_Test : public ::testing::Test {
 
                 sys->v[0].x = 0.0;
                 sys->v[1].x = 0.0;
-		sys->v[0].y = 1.0;
+                sys->v[0].y = 1.0;
                 sys->v[1].y = -1.0;
-		sys->v[0].z = 0.0;
+                sys->v[0].z = 0.0;
                 sys->v[1].z = 0.0;
-
         }
 
         void TearDown() {
                 delete[] sys->v;
-			
+
                 delete sys;
         }
 };
@@ -56,7 +55,7 @@ TEST_F(Ekin_T_Test, test1) {
         ASSERT_NE(sys, nullptr);
         ASSERT_DOUBLE_EQ(sys->v[0].y, 1.0);
         ASSERT_DOUBLE_EQ(sys->v[1].y, -1.0);
-	
+
         ekin(sys);
         double exp_ekin = mvsq2e;
         double exp_temp = 2 * exp_ekin / (3 * kboltz);

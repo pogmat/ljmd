@@ -21,14 +21,14 @@ void force(mdsys_t *sys) {
         double rsq, ffac;
         double rx, ry, rz;
         int i, j;
-	
+
         /* zero energy and forces */
         sys->epot = 0.0;
-		double pot_energy;
+        double pot_energy;
         azzero(sys->f, sys->natoms);
-		
-		double force_x, force_y, force_z;
-	
+
+        double force_x, force_y, force_z;
+
 #if defined(MPI_ENABLED)
         for (i = sys->proc_seg->idx;
              i < (sys->proc_seg->idx + sys->proc_seg->size); ++i) {
@@ -44,16 +44,17 @@ void force(mdsys_t *sys) {
 #endif
 
                         /* get distance between particle i and j */
-                       	rx = pbc(sys->r[i].x - sys->r[j].x, 0.5 * sys->box);
+                        rx = pbc(sys->r[i].x - sys->r[j].x, 0.5 * sys->box);
                         ry = pbc(sys->r[i].y - sys->r[j].y, 0.5 * sys->box);
                         rz = pbc(sys->r[i].z - sys->r[j].z, 0.5 * sys->box);
                         rsq = sqrt(rx * rx + ry * ry + rz * rz);
 
                         /* compute force and energy if within cutoff */
                         if (rsq < sys->rcut) {
-                                ffac = -4.0 * sys->epsilon *
-                                       (-12.0 * pow(sys->sigma / rsq, 12.0) / rsq +
-                                        6 * pow(sys->sigma / rsq, 6.0) / rsq);
+                                ffac =
+                                    -4.0 * sys->epsilon *
+                                    (-12.0 * pow(sys->sigma / rsq, 12.0) / rsq +
+                                     6 * pow(sys->sigma / rsq, 6.0) / rsq);
 
                                 pot_energy = 4.0 * sys->epsilon *
                                              (pow(sys->sigma / rsq, 12.0) -
@@ -79,10 +80,4 @@ void force(mdsys_t *sys) {
                         }
                 }
         }
-}	
-	
-	
-	
-	
-	
-	
+}
