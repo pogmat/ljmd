@@ -30,20 +30,16 @@ TEST(MPIForceTestSingle, single) {
         proc_seg.size = sys->natoms;
         proc_seg.idx = 0;
 
-        sys->fx = new double[1];
-        sys->fy = new double[1];
-        sys->fz = new double[1];
+       	sys->f = new vec3_t[1];
 
         force(sys);
 
-        ASSERT_EQ(sys->fx[0], 0.0);
-        ASSERT_EQ(sys->fy[0], 0.0);
-        ASSERT_EQ(sys->fz[0], 0.0);
+        ASSERT_EQ(sys->f[0].x, 0.0);
+        ASSERT_EQ(sys->f[0].y, 0.0);
+        ASSERT_EQ(sys->f[0].z, 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, 0.0);
 
-        delete[] sys->fx;
-        delete[] sys->fy;
-        delete[] sys->fz;
+        delete[] sys->f;
 
         sys->proc_seg = nullptr;
 
@@ -80,28 +76,20 @@ class MPI_ForceTest : public ::testing::TestWithParam<double> {
                 sys->nprocs = nprocs;
                 sys->proc_id = proc_id;
 
-                sys->rx = new double[3]();
-                sys->ry = new double[3]();
-                sys->rz = new double[3]();
+				sys->r = new vec3_t[3]();
 
-                sys->fx = new double[3];
-                sys->fy = new double[3];
-                sys->fz = new double[3];
+                sys->f = new vec3_t[3];
+			
 
-                sys->rx[0] = -1.0;
-                sys->rx[1] = 0.0;
-                sys->rx[2] = 1.0;
+                sys->r[0].x = -1.0;
+                sys->r[1].x = 0.0;
+                sys->r[2].x = 1.0;
         }
 
         void TearDown() {
-                delete[] sys->rx;
-                delete[] sys->ry;
-                delete[] sys->rz;
-
-                delete[] sys->fx;
-                delete[] sys->fy;
-                delete[] sys->fz;
-
+                 delete[] sys->r;
+                delete[] sys->f;
+			
                 delete proc_seg.splitting;
 
                 sys->proc_seg = nullptr;
@@ -112,15 +100,15 @@ class MPI_ForceTest : public ::testing::TestWithParam<double> {
 TEST_P(MPI_ForceTest, shortrange) {
 
         ASSERT_DOUBLE_EQ(sys->natoms, 3);
-        ASSERT_DOUBLE_EQ(sys->rx[0], -1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rx[2], 1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[2], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[2], 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].x, -1.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].x, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].x, 1.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].z, 0.0);
 
         init_segments(nprocs, proc_id, sys->proc_seg, sys->natoms);
 
@@ -134,9 +122,9 @@ TEST_P(MPI_ForceTest, shortrange) {
         double exp_ff_2 = eps_param * 93.0 / 512.0;
 
         for (int k = 0; k < sys->natoms; ++k) {
-                EXPECT_DOUBLE_EQ(sys->fx[k], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fy[k], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fz[k], 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[k].x, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[k].y, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[k].z, 0.0);
         }
         EXPECT_DOUBLE_EQ(sys->epot, 0.0);
 }
@@ -144,15 +132,15 @@ TEST_P(MPI_ForceTest, shortrange) {
 TEST_P(MPI_ForceTest, longrange) {
 
         ASSERT_DOUBLE_EQ(sys->natoms, 3);
-        ASSERT_DOUBLE_EQ(sys->rx[0], -1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rx[2], 1.0);
-        ASSERT_DOUBLE_EQ(sys->ry[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[2], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[0], 0.0);
-        ASSERT_DOUBLE_EQ(sys->rz[1], 0.0);
-        ASSERT_DOUBLE_EQ(sys->ry[2], 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].x, -1.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].x, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].x, 1.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].y, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[0].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[1].z, 0.0);
+        ASSERT_DOUBLE_EQ(sys->r[2].z, 0.0);
 
         init_segments(nprocs, proc_id, sys->proc_seg, sys->natoms);
 
@@ -166,27 +154,27 @@ TEST_P(MPI_ForceTest, longrange) {
         double exp_ff_2 = eps_param * 93.0 / 512.0;
 
         for (int k = 0; k < sys->natoms; ++k) {
-                EXPECT_DOUBLE_EQ(sys->fy[k], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fz[k], 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[k].y, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[k].z, 0.0);
         }
 
         switch (sys->proc_id) {
         case 0:
-                EXPECT_DOUBLE_EQ(sys->fx[0], exp_ff_1 + exp_ff_2);
-                EXPECT_DOUBLE_EQ(sys->fx[1], -exp_ff_1);
-                EXPECT_DOUBLE_EQ(sys->fx[2], -exp_ff_2);
+                EXPECT_DOUBLE_EQ(sys->f[0].x, exp_ff_1 + exp_ff_2);
+                EXPECT_DOUBLE_EQ(sys->f[1].x, -exp_ff_1);
+                EXPECT_DOUBLE_EQ(sys->f[2].x, -exp_ff_2);
                 EXPECT_DOUBLE_EQ(sys->epot, exp_epot_1 + exp_epot_2);
                 break;
         case 1:
-                EXPECT_DOUBLE_EQ(sys->fx[0], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fx[1], exp_ff_1);
-                EXPECT_DOUBLE_EQ(sys->fx[2], -exp_ff_1);
+                EXPECT_DOUBLE_EQ(sys->f[0].x, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[1].x, exp_ff_1);
+                EXPECT_DOUBLE_EQ(sys->f[2].x, -exp_ff_1);
                 EXPECT_DOUBLE_EQ(sys->epot, exp_epot_1);
                 break;
         case 2:
-                EXPECT_DOUBLE_EQ(sys->fx[0], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fx[1], 0.0);
-                EXPECT_DOUBLE_EQ(sys->fx[2], 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[0].x, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[1].x, 0.0);
+                EXPECT_DOUBLE_EQ(sys->f[2].x, 0.0);
                 EXPECT_DOUBLE_EQ(sys->epot, 0.0);
                 break;
         default:

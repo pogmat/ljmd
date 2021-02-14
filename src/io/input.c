@@ -140,14 +140,15 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
         fp = fopen(restfile, "r");
         if (fp) {
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->rx + i, sys->ry + i,
-                               sys->rz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->r[i].x), &(sys->r[i].y),
+                               &(sys->r[i].z));
                 }
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->vx + i, sys->vy + i,
-                               sys->vz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->v[i].x), &(sys->v[i].y),
+                               &(sys->v[i].z));
                 }
                 fclose(fp);
+                //azzero(sys->f, sys->natoms);
         } else {
                 perror("cannot read restart file");
                 return 3;

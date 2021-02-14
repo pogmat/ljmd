@@ -12,7 +12,7 @@ void output(mdsys_t *sys, FILE *erg, FILE *traj) {
         fprintf(traj, "%d\n nfi=%d etot=%20.8f\n", sys->natoms, sys->nfi,
                 sys->ekin + sys->epot);
         for (i = 0; i < sys->natoms; ++i) {
-                fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", sys->rx[i],
-                        sys->ry[i], sys->rz[i]);
+                fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", (sys->r[i]).x,
+                        (sys->r[i]).y, (sys->r[i]).z);
         }
 }
