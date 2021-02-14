@@ -63,7 +63,7 @@ set_target_properties(omp_naive PROPERTIES OUTPUT_NAME "ljmd_omp_naive.x")
 
 #link libraries and the lib source files
 find_package(OpenMP REQUIRED)
-target_link_libraries(omp_naive PRIVATE ljmd_phys_lib_omp_naive	ljmd_io_lib ljmd_common_lib OpenMP::OpenMP_C)
+target_link_libraries(omp_naive PRIVATE ljmd_phys_lib_omp_naive ljmd_force_lib_omp_naive	ljmd_io_lib ljmd_common_lib OpenMP::OpenMP_C)
 
 #compile options
 target_compile_options (omp_naive PRIVATE ${main_flags})
