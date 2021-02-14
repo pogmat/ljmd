@@ -124,43 +124,36 @@ int initialise(mdsys_t *sys, FILE *infile, file_names *fnames, int *nprint) {
 #endif
 
         /* allocate memory */
-        sys->rx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->ry = (double *)malloc(sys->natoms * sizeof(double));
-        sys->rz = (double *)malloc(sys->natoms * sizeof(double));
-#if !defined(MPI_ENABLED)
-        sys->vx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->vy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->vz = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fz = (double *)malloc(sys->natoms * sizeof(double));
-#else
-        sys->fx = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fy = (double *)malloc(sys->natoms * sizeof(double));
-        sys->fz = (double *)malloc(sys->natoms * sizeof(double));
-        if (sys->proc_id != 0) {
-                sys->vx = (double *)malloc(1);
-                sys->vy = (double *)malloc(1);
-                sys->vz = (double *)malloc(1);
-        } else {
-                sys->vx = (double *)malloc(sys->natoms * sizeof(double));
-                sys->vy = (double *)malloc(sys->natoms * sizeof(double));
-                sys->vz = (double *)malloc(sys->natoms * sizeof(double));
 
-#endif
+	sys->r =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+	#if !defined(MPI_ENABLED)
+	sys->v =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+	sys->f =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+	#else
+	sys->f =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+        if (sys->proc_id != 0) {
+		sys->v = (vec3_t*)malloc(1);
+        } else {
+		sys->v =  (vec3_t *)malloc(sys->natoms * sizeof(vec3_t));
+		
+		#endif
+
 
         /* read restart */
         fp = fopen(restfile, "r");
         if (fp) {
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->rx + i, sys->ry + i,
-                               sys->rz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->r[i].x), &(sys->r[i].y),
+                               &(sys->r[i].z));
                 }
                 for (i = 0; i < sys->natoms; ++i) {
-                        fscanf(fp, "%lf%lf%lf", sys->vx + i, sys->vy + i,
-                               sys->vz + i);
+                        fscanf(fp, "%lf%lf%lf", &(sys->v[i].x), &(sys->v[i].y),
+                               &(sys->v[i].z));
                 }
                 fclose(fp);
+
+                azzero(sys->f, sys->natoms);
+
         } else {
                 perror("cannot read restart file");
                 return 3;

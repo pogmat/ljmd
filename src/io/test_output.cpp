@@ -21,14 +21,12 @@ TEST(test_output, output) {
   sys.epot = 123.321;
   sys.temp = 273.16;
 
-  sys.rx = (double *)malloc(sys.natoms * sizeof(double));
-  sys.ry = (double *)malloc(sys.natoms * sizeof(double));
-  sys.rz = (double *)malloc(sys.natoms * sizeof(double));
+  sys.r = (vec3_t *)malloc(sys.natoms * sizeof(vec3_t));
 
   for(int i=0; i<sys.natoms; ++i){
-    sys.rx[i] = (double)i/100. + 1.0;
-    sys.ry[i] = (double)i/100. + 2.0;
-    sys.rz[i] = (double)i/100. + 3.0;
+    sys.r[i].x = (double)i/100. + 1.0;
+    sys.r[i].y = (double)i/100. + 2.0;
+    sys.r[i].z = (double)i/100. + 3.0;
   }
   
   erg = fopen("erg_sample.txt", "w");
@@ -39,9 +37,7 @@ TEST(test_output, output) {
   fclose(erg);
   fclose(traj);
 
-  free(sys.rx);
-  free(sys.ry);
-  free(sys.rz);
+  free(sys.r);
 
   // Testing the contents of file associated with `erg` filestream
   double total_energy;
@@ -66,21 +62,18 @@ TEST(test_output, output) {
   ASSERT_EQ(test2_sys.nfi, 101);
   ASSERT_DOUBLE_EQ(total_energy, sys.ekin + sys.epot);
 
-  test2_sys.rx = (double *)malloc(test2_sys.natoms * sizeof(double));
-  test2_sys.ry = (double *)malloc(test2_sys.natoms * sizeof(double));
-  test2_sys.rz = (double *)malloc(test2_sys.natoms * sizeof(double));
+  test2_sys.r = (vec3_t *)malloc(test2_sys.natoms * sizeof(vec3_t));
+
 
   for(int i=0; i<sys.natoms; ++i){
-    fscanf(traj, "Ar %lf %lf %lf\n", &(test2_sys.rx[i]), &(test2_sys.ry[i]), &(test2_sys.rz[i]));
+    fscanf(traj, "Ar %lf %lf %lf\n", &(test2_sys.r[i].x), &(test2_sys.r[i].y), &(test2_sys.r[i].z));
 
-    ASSERT_DOUBLE_EQ(test2_sys.rx[i], (double)i/100. + 1.0);
-    ASSERT_DOUBLE_EQ(test2_sys.ry[i], (double)i/100. + 2.0);
-    ASSERT_DOUBLE_EQ(test2_sys.rz[i], (double)i/100. + 3.0);
+    ASSERT_DOUBLE_EQ(test2_sys.r[i].x, (double)i/100. + 1.0);
+    ASSERT_DOUBLE_EQ(test2_sys.r[i].y, (double)i/100. + 2.0);
+    ASSERT_DOUBLE_EQ(test2_sys.r[i].z, (double)i/100. + 3.0);
   }
 
   fclose(traj);
 
-  free(test2_sys.rx);
-  free(test2_sys.ry);
-  free(test2_sys.rz);
+  free(test2_sys.r);
 }

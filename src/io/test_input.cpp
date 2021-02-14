@@ -90,33 +90,22 @@ TEST(test_input, initialise) {
   ASSERT_EQ(nprint, 100);
 
   for(int i=0; i<108; ++i){
-    ASSERT_DOUBLE_EQ(sys.rx[i], (double)i/100.);
-    ASSERT_DOUBLE_EQ(sys.ry[i], (double)i/100.);
-    ASSERT_DOUBLE_EQ(sys.rz[i], (double)i/100.);
+    ASSERT_DOUBLE_EQ(sys.r[i].x, (double)i/100.);
+    ASSERT_DOUBLE_EQ(sys.r[i].y, (double)i/100.);
+    ASSERT_DOUBLE_EQ(sys.r[i].z, (double)i/100.);
 
-    ASSERT_DOUBLE_EQ(sys.vx[i], (double)(i+108)/100.);
-    ASSERT_DOUBLE_EQ(sys.vy[i], (double)(i+108)/100.);
-    ASSERT_DOUBLE_EQ(sys.vz[i], (double)(i+108)/100.);
+    ASSERT_DOUBLE_EQ(sys.v[i].x, (double)(i+108)/100.);
+    ASSERT_DOUBLE_EQ(sys.v[i].y, (double)(i+108)/100.);
+    ASSERT_DOUBLE_EQ(sys.v[i].z, (double)(i+108)/100.);
   }
   
-  ASSERT_NE(sys.rx, nullptr);
-  ASSERT_NE(sys.ry, nullptr);
-  ASSERT_NE(sys.rz, nullptr);
-  ASSERT_NE(sys.vx, nullptr);
-  ASSERT_NE(sys.vy, nullptr);
-  ASSERT_NE(sys.vz, nullptr);
-  ASSERT_NE(sys.fx, nullptr);
-  ASSERT_NE(sys.fy, nullptr);
-  ASSERT_NE(sys.fz, nullptr);
+  ASSERT_NE(sys.r, nullptr);
+  ASSERT_NE(sys.v, nullptr);
+  ASSERT_NE(sys.f, nullptr);
 
-  free(sys.rx);
-  free(sys.ry);
-  free(sys.rz);
-  free(sys.vx);
-  free(sys.vy);
-  free(sys.vz);
-  free(sys.fx);
-  free(sys.fy);
-  free(sys.fz);
+  free(sys.r);
+  free(sys.v);
+  free(sys.f);
+
 
 }

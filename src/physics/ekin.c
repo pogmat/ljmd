@@ -12,8 +12,8 @@ void ekin(mdsys_t *sys) {
         for (i = 0; i < sys->natoms; ++i) {
                 ekin +=
                     0.5 * mvsq2e * sys->mass *
-                    (sys->vx[i] * sys->vx[i] + sys->vy[i] * sys->vy[i] +
-                     sys->vz[i] * sys->vz[i]);
+                    (sys->v[i].x * sys->v[i].x + sys->v[i].y * sys->v[i].y +
+                     sys->v[i].z * sys->v[i].z);
         }
 
         sys->ekin = ekin;
