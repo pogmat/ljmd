@@ -27,11 +27,10 @@ TEST(ForceTestSingle, single) {
         proc_seg.idx = 0;
 #endif
 
+        sys->rx = new double[1];
+        sys->ry = new double[1];
+        sys->rz = new double[1];
 
-	sys->rx = new double[1];
-	sys->ry = new double[1];
-	sys->rz = new double[1];
-	
         sys->fx = new double[1];
         sys->fy = new double[1];
         sys->fz = new double[1];
