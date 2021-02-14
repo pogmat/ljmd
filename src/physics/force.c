@@ -29,12 +29,18 @@ void force(mdsys_t *sys) {
        #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, r, ffac) reduction(+:epot)
        #endif
         for (i = 0; i < (sys->natoms); ++i) {
+                #ifdef _OMP_3RD_LAW
+                for (j = i+1; j < (sys->natoms); ++j) {
+                #else
                 for (j = 0; j < (sys->natoms); ++j) {
+                #endif
 
+                        #ifndef _OMP_3RD_LAW
                         /* particles have no interactions with themselves */
                         if (i == j)
                                 continue;
-
+                        #endif
+                        
                         /* get distance between particle i and j */
                         rx = pbc(sys->rx[i] - sys->rx[j], 0.5 * sys->box);
                         ry = pbc(sys->ry[i] - sys->ry[j], 0.5 * sys->box);
@@ -51,13 +57,33 @@ void force(mdsys_t *sys) {
                                              (pow(sys->sigma / r, 12.0) -
                                               pow(sys->sigma / r, 6.0));
 
+                                #ifdef _OMP_3RD_LAW
+
+                                #pragma omp critical
+                                {
                                 sys->fx[i] += rx / r * ffac;
                                 sys->fy[i] += ry / r * ffac;
                                 sys->fz[i] += rz / r * ffac;
+                                sys->fx[j] -= rx / r * ffac;
+                                sys->fy[j] -= ry / r * ffac;
+                                sys->fz[j] -= rz / r * ffac;
+                                }
+
+                                #else
+
+                                sys->fx[i] += rx / r * ffac;
+                                sys->fy[i] += ry / r * ffac;
+                                sys->fz[i] += rz / r * ffac;
+
+                                #endif
                         }
                         
                 }
         }
 
         sys->epot = epot;
+
+        #ifdef _OMP_3RD_LAW
+        sys->epot *= 2.0;
+        #endif
 }

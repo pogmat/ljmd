@@ -105,3 +105,11 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(test_ekin_omp_naive PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib_omp_naive ljmd_common_lib OpenMP::OpenMP_CXX)
 add_test(NAME ekin_omp_naive COMMAND test_ekin_omp_naive)
 
+# force calculation with omp_3rd_law
+add_executable(test_force_omp_3rd_law ${ljmd_SOURCE_FILES}/physics/test_force.cpp)
+set_target_properties(test_force_omp_3rd_law PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_force_omp_3rd_law PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
+find_package(OpenMP REQUIRED)
+target_link_libraries(test_force_omp_3rd_law PRIVATE GTest::GTestMain GTest::GTest ljmd_force_lib_omp_3rd_law ljmd_common_lib OpenMP::OpenMP_CXX)
+add_test(NAME force_omp_3rd_law COMMAND test_force_omp_3rd_law)
+
