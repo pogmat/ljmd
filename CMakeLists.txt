@@ -9,14 +9,16 @@ if(ENABLE_MPI)
 			find_package(MPI REQUIRED) 
 			set( tgt_name mpi)
 			set( tgt_exe_name ${exe_name} )
-elseif(ENABLE_OMP)
+endif()
+if(ENABLE_OMP)
 			find_package(OpenMP REQUIRED)
 			set( tgt_name omp_3rd_law)
 			set( tgt_exe_name ${exe_name} )
-else()			
-			set( tgt_name serial)
-			set( tgt_exe_name ${exe_name} )
 endif()
+
+#			set( tgt_name serial)
+#			set( tgt_exe_name ${exe_name} )
+#endif()
 
 
 

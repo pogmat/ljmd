@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
 #endif
 
 #if defined(MPI_ENABLED)
-        int nprocs, proc_id;
-        MPI_Init(&argc, &argv);
+        int nprocs, proc_id, mpi_f;
+        MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &mpi_f);
 
         MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
         MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);

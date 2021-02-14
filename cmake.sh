@@ -19,6 +19,9 @@ case "$arg" in
   "omp" )
 	FLAGS="$FLAGS -DENABLE_OMP=ON"
 	;;
+  "hyb"  )
+    FLAGS="$FLAGS -DENABLE_OMP=ON -DENABLE_MPI=ON"
+    ;;
   "test" )
     FLAGS="$FLAGS -DENABLE_TESTING=ON"
     ;;

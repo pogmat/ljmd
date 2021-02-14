@@ -25,7 +25,8 @@ if(ENABLE_MPI)
 					ljmd_mpi_util_lib
 					)
 	target_compile_definitions(ljmd_phys_lib PRIVATE MPI_ENABLED=1 )
-elseif(ENABLE_OMP)
+endif()
+if(ENABLE_OMP)
 	# target library name and sources (for force.c)
 	target_link_libraries(ljmd_phys_lib PRIVATE m OpenMP::OpenMP_C)
 

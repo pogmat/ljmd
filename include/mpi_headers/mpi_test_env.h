@@ -16,7 +16,9 @@ class MPITestEnv : public ::testing::Environment {
         virtual void SetUp() {
                 char **argv;
                 int argc = 0;
-                int mpistatus = MPI_Init(&argc, &argv);
+		int mpi_f;
+                int mpistatus = MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &mpi_f);
+		
                 ASSERT_FALSE(mpistatus);
 
                 nprocs = get_mpi_procs();
