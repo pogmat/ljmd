@@ -24,23 +24,38 @@ TEST(pbc_test, outside) {
 TEST(MPIForceTestSingle, single) {
         mdsys_t *sys = new mdsys_t;
         sys->natoms = 1;
+        sys->box = 10.0;
+        sys->epsilon = 1;
+        sys->sigma = 1;
+        sys->rcut = 0;
 
-        arr_seg_t proc_seg;
-        sys->proc_seg = &proc_seg;
-        proc_seg.size = sys->natoms;
-        proc_seg.idx = 0;
+        sys->rx = new double[1]();
+        sys->ry = new double[1]();
+        sys->rz = new double[1]();
 
         sys->fx = new double[1];
         sys->fy = new double[1];
         sys->fz = new double[1];
-/*
+
+        arr_seg_t proc_seg;
+
+        proc_seg.size = sys->natoms;
+        proc_seg.idx = 0;
+        sys->proc_seg = &proc_seg;
+
+        ASSERT_TRUE(sys->proc_seg);
+
         force(sys);
 
         ASSERT_EQ(sys->fx[0], 0.0);
         ASSERT_EQ(sys->fy[0], 0.0);
         ASSERT_EQ(sys->fz[0], 0.0);
         ASSERT_DOUBLE_EQ(sys->epot, 0.0);
-*/
+
+        delete[] sys->rx;
+        delete[] sys->ry;
+        delete[] sys->rz;
+
         delete[] sys->fx;
         delete[] sys->fy;
         delete[] sys->fz;
@@ -49,7 +64,7 @@ TEST(MPIForceTestSingle, single) {
 
         delete sys;
 }
-/*
+
 class MPI_ForceTest : public ::testing::TestWithParam<double> {
 
       protected:
@@ -196,7 +211,7 @@ TEST_P(MPI_ForceTest, longrange) {
 
 INSTANTIATE_TEST_SUITE_P(MPI_ForceTest_parametric, MPI_ForceTest,
                          ::testing::Values(1.0));
-*/
+
 int main(int argc, char **argv) {
 
         std::string command_line_arg(argc == 2 ? argv[1] : "");
