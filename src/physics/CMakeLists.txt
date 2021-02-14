@@ -36,3 +36,15 @@ target_link_libraries(ljmd_force_lib_omp_naive PRIVATE m OpenMP::OpenMP_C)
 # compile options (for force.c)
 target_compile_options(ljmd_force_lib_omp_naive PRIVATE ${phys_flags})
 target_compile_definitions(ljmd_force_lib_omp_naive PRIVATE _OMP_NAIVE)
+
+###########################
+# _OMP_3RD_LAW
+###########################
+
+# target library name and sources (for force.c)
+add_library(ljmd_force_lib_omp_3rd_law force.c)
+target_link_libraries(ljmd_force_lib_omp_3rd_law PRIVATE m OpenMP::OpenMP_C)
+
+# compile options (for force.c)
+target_compile_options(ljmd_force_lib_omp_3rd_law PRIVATE ${phys_flags})
+target_compile_definitions(ljmd_force_lib_omp_3rd_law PRIVATE _OMP_NAIVE _OMP_3RD_LAW)

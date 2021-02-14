@@ -37,6 +37,7 @@ void force(mdsys_t *sys) {
         #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, ffac, r1x, r1y, r1z, f1x, f1y, f1z, rsq, rinv, r6) reduction(+:epot)
         #endif
         for (i = 0; i < (sys->natoms); ++i) {
+
 		r1x = sys->rx[i];
 		r1y = sys->ry[i];
 		r1z = sys->rz[i];
@@ -69,9 +70,18 @@ void force(mdsys_t *sys) {
                                 f1z += rz * ffac;
 
                                 #ifndef _OMP_NAIVE
+
+                                #ifdef _OMP_3RD_LAW
+                                #pragma omp critical
+                                {
+                                #endif
 				sys->fx[j] -= rx * ffac;
 				sys->fy[j] -= ry * ffac;
 				sys->fz[j] -= rz * ffac;
+                                #ifdef _OMP_3RD_LAW
+                                }
+                                #endif
+
                                 #endif
                         }
                         
