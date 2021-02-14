@@ -15,15 +15,15 @@ System sizes of 108,2916 and 78732 were considered, while P varied as 1,2,4,8,12
 
 
 
-![Total runtimes for each case](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_runtimes.jpg?raw=true)
+![Total runtimes for each case](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_runtimes.jpg?raw=true)
 
-![Strong scalability curves, for different system sizes](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_strong_scaling.jpg?raw=true)
+![Strong scalability curves, for different system sizes](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_strong_scaling.jpg?raw=true)
 
-![Parallel efficiency versus number of processes](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_efficiency.jpg?raw=true)
+![Parallel efficiency versus number of processes](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_efficiency.jpg?raw=true)
 
-![Detailed breakdown of the runtime for N=108](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_108_times.jpg?raw=true)
-![Detailed breakdown of the runtime for N=108](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_2916_times.jpg?raw=true)
-![Detailed breakdown of the runtime for N=108](https://github.com/giuliodondi/ljmd/blob/master/reports/plots/MPI_78732_times.jpg?raw=true)
+![Detailed breakdown of the runtime for N=108](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_108_times.jpg?raw=true)
+![Detailed breakdown of the runtime for N=108](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_2916_times.jpg?raw=true)
+![Detailed breakdown of the runtime for N=108](https://github.com/pogmat/ljmd/blob/master/reports/plots/MPI_78732_times.jpg?raw=true)
 
 
 Thee plots make evident several things about the problem and implementation:
