@@ -121,12 +121,24 @@ find_program(AWK_PROGRAM awk)
 find_program(CMP_PROGRAM cmp)
 if(BASH_PROGRAM AND AWK_PROGRAM AND CMP_PROGRAM)
 	
+    # reference test for ljmd-mpi.x
 	if(ENABLE_MPI)
-		list( APPEND comparison_test_args $<TARGET_FILE:mpi> ${CMAKE_MODULE_PATH} "mpi" )
-	else()
-		list( APPEND comparison_test_args $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH} )
+		list( APPEND comparison_mpi_args $<TARGET_FILE:mpi> ${CMAKE_MODULE_PATH} "mpi" )
+        add_test(NAME comparison_mpi COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_mpi_args} )
 	endif()
-    add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_test_args} )
+
+    # reference test for ljmd-serial.x
+    list( APPEND comparison_serial_args $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH} "serial")
+    add_test(NAME comparison_serial COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_serial_args} )
+
+    # reference test for ljmd_omp_naive.x
+    list(APPEND comparison_omp_naive_args $<TARGET_FILE:omp_naive> ${CMAKE_MODULE_PATH} "omp_naive")
+    add_test(NAME comparison_omp_naive COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_omp_naive_args} )
+
+    # reference test for ljmd_omp_3rd_law.x
+    list(APPEND comparison_omp_3rdlaw_args $<TARGET_FILE:omp_3rd_law> ${CMAKE_MODULE_PATH} "omp_3rd_law")
+    add_test(NAME comparison_omp_3rd_law COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh ${comparison_omp_3rdlaw_args} )
+
 endif()
 
 
