@@ -19,12 +19,19 @@ target_include_directories(test_common PRIVATE ${CMAKE_MODULE_PATH}/src)
 target_link_libraries(test_common PRIVATE GTest::GTestMain GTest::GTest ljmd_common_lib)
 add_test(NAME common COMMAND test_common )
   
-# io tests
+# input tests
 add_executable(test_input ${ljmd_SOURCE_FILES}/io/test_input.cpp)
 set_target_properties(test_input PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
 target_include_directories(test_input PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/io ${ljmd_SOURCE_DIR}/src/common)
 target_link_libraries(test_input PRIVATE GTest::GTestMain GTest::GTest ljmd_io_lib)
 add_test(NAME input COMMAND test_input)
+
+# output tests
+add_executable(test_output ${ljmd_SOURCE_FILES}/io/test_output.cpp)
+set_target_properties(test_output PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_output PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/io)
+target_link_libraries(test_output PRIVATE GTest::GTestMain GTest::GTest ljmd_io_lib)
+add_test(NAME output COMMAND test_output)
 
 
 # utils tests
@@ -69,3 +76,32 @@ find_program(CMP_PROGRAM cmp)
 if(BASH_PROGRAM AND AWK_PROGRAM AND CMP_PROGRAM)
     add_test(NAME comparison COMMAND ${ljmd_SOURCE_DIR}/tests/compare.sh $<TARGET_FILE:serial> ${CMAKE_MODULE_PATH})
 endif()
+
+#################################
+# All the OMP tests
+#################################
+
+# verlet integration with omp_naive
+add_executable(test_verlet_omp_naive ${ljmd_SOURCE_FILES}/physics/test_integration.cpp)
+set_target_properties(test_verlet_omp_naive PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_verlet_omp_naive PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
+find_package(OpenMP REQUIRED)
+target_link_libraries(test_verlet_omp_naive PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib_omp_naive ljmd_common_lib OpenMP::OpenMP_CXX)
+add_test(NAME verlet_omp_naive COMMAND test_verlet_omp_naive)
+
+# force calculation with omp_naive
+add_executable(test_force_omp_naive ${ljmd_SOURCE_FILES}/physics/test_force.cpp)
+set_target_properties(test_force_omp_naive PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_force_omp_naive PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
+find_package(OpenMP REQUIRED)
+target_link_libraries(test_force_omp_naive PRIVATE GTest::GTestMain GTest::GTest ljmd_force_lib_omp_naive ljmd_common_lib OpenMP::OpenMP_CXX)
+add_test(NAME force_omp_naive COMMAND test_force_omp_naive)
+
+# ekin and temp with omp_naive
+add_executable(test_ekin_omp_naive ${ljmd_SOURCE_FILES}/physics/test_ekin.cpp)
+set_target_properties(test_ekin_omp_naive PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ljmd_SOURCE_DIR}/build)
+target_include_directories(test_ekin_omp_naive PRIVATE ${CMAKE_MODULE_PATH}/src ${ljmd_SOURCE_DIR}/src/physics)
+find_package(OpenMP REQUIRED)
+target_link_libraries(test_ekin_omp_naive PRIVATE GTest::GTestMain GTest::GTest ljmd_phys_lib_omp_naive ljmd_common_lib OpenMP::OpenMP_CXX)
+add_test(NAME ekin_omp_naive COMMAND test_ekin_omp_naive)
+

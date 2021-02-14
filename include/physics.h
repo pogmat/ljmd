@@ -3,6 +3,10 @@
 
 #include "common.h"
 
+#ifdef _OMP_NAIVE
+#include <omp.h>
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {

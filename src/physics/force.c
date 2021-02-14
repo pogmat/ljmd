@@ -20,7 +20,8 @@ void force(mdsys_t *sys) {
         int i, j;
 	
         /* zero energy and forces */
-        sys->epot = 0.0;
+        double epot = 0.0;
+
         azzero(sys->fx, sys->natoms);
         azzero(sys->fy, sys->natoms);
         azzero(sys->fz, sys->natoms);
@@ -31,6 +32,10 @@ void force(mdsys_t *sys) {
 	double r6, rinv;
 	double r1x, r1y, r1z;
 	double f1x, f1y, f1z;
+
+        #ifdef _OMP_NAIVE
+        #pragma omp parallel for default(shared) private(i, j, rx, ry, rz, ffac, r1x, r1y, r1z, f1x, f1y, f1z, rsq, rinv, r6) reduction(+:epot)
+        #endif
         for (i = 0; i < (sys->natoms); ++i) {
 		r1x = sys->rx[i];
 		r1y = sys->ry[i];
@@ -50,7 +55,7 @@ void force(mdsys_t *sys) {
 				rinv = 1.0 / rsq;
 				r6 = rinv * rinv * rinv;
 				ffac = (12.0 * c12 * r6 - 6.0 * c6) * r6 * rinv;
-				sys->epot += r6 * (c12 * r6 - c6);
+				epot += r6 * (c12 * r6 - c6);
 
                                 f1x += rx * ffac;
                                 f1y += ry * ffac;
@@ -59,9 +64,12 @@ void force(mdsys_t *sys) {
 				sys->fy[j] -= ry * ffac;
 				sys->fz[j] -= rz * ffac;
                         }
+                        
                 }
 		sys->fx[i] += f1x;
 		sys->fy[i] += f1y;
 		sys->fz[i] += f1z;
         }
+
+        sys->epot = epot;
 }
