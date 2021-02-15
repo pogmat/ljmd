@@ -2,14 +2,14 @@
 
 Contributors:
 
- - Avinash
-anand-avinash
+ - Avinash Anand
+(anand-avinash)
 
 - Giulio Dondi
-giuliodondi
+(giuliodondi)
 
 - Matteo Poggi
-pogmat
+(pogmat)
 
 
 Compilation of LJMD code:
