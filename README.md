@@ -5,7 +5,7 @@ Contributors:
  - Avinash
 anand-avinash
 
--Giulio Dondi
+- Giulio Dondi
 giuliodondi
 
 - Matteo Poggi
