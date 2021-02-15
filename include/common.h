@@ -4,18 +4,15 @@
 #include <sys/time.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 double wallclock();
 
 void azzero(double *d, const int n);
 
-
 #ifdef __cplusplus
 }
 #endif
-	
+
 #endif
